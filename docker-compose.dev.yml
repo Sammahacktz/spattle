@@ -1,0 +1,24 @@
+version: '3.8'
+
+services:
+  mysql:
+    image: mysql:8.0
+    container_name: spattle_mysql_dev
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpassword
+      MYSQL_DATABASE: spattle_db
+      MYSQL_USER: spattle_user
+      MYSQL_PASSWORD: spattle_password
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_dev_data:/var/lib/mysql
+    networks:
+      - spattle_dev_network
+
+volumes:
+  mysql_dev_data:
+
+networks:
+  spattle_dev_network:
+    driver: bridge

@@ -1,0 +1,54 @@
+version: '3.8'
+
+services:
+  mysql:
+    image: mysql:8.0
+    container_name: spattle_mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpassword
+      MYSQL_DATABASE: spattle_db
+      MYSQL_USER: spattle_user
+      MYSQL_PASSWORD: spattle_password
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+    networks:
+      - spattle_network
+
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile.backend
+    container_name: spattle_backend
+    environment:
+      DATABASE_URL: mysql+pymysql://spattle_user:spattle_password@mysql:3306/spattle_db
+      SECRET_KEY: your-production-secret-key-here
+    ports:
+      - "8000:8000"
+    depends_on:
+      - mysql
+    networks:
+      - spattle_network
+    volumes:
+      - .:/app
+    command: ["sh", "-c", "poetry run alembic upgrade head && uvicorn app.main:app --host 0.0.0.0 --port 8000"]
+
+  frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile.frontend
+    container_name: spattle_frontend
+    ports:
+      - "80:80"
+    depends_on:
+      - backend
+    networks:
+      - spattle_network
+
+volumes:
+  mysql_data:
+
+networks:
+  spattle_network:
+    driver: bridge
