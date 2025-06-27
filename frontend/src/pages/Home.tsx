@@ -15,16 +15,16 @@ const Home: React.FC = () => {
     const { isAuthenticated } = useAuth();
 
     return (
-        <Container maxWidth="lg">
+        <Container maxWidth="lg" className='home-video'>
             <Box sx={{ textAlign: 'center', py: 8 }}>
                 <Typography variant="h2" component="h1" gutterBottom>
-                    Welcome to Spattle
+                    Wilkommen bei Spattle
                 </Typography>
                 <Typography variant="h5" component="h2" gutterBottom color="text.secondary">
-                    The Ultimate Sport Battle Platform
+                    Die Ultimative Plattfrom um sich und seine Freunde zu motievieren und fit zu bleiben
                 </Typography>
                 <Typography variant="body1" sx={{ mt: 3, mb: 4 }}>
-                    Join exciting sport battles, compete with others, and showcase your skills!
+                    Trete den Challenges deiner Freunde bei oder erstelle deine eigenen und zeigt was Ihr drauf habt!
                 </Typography>
 
                 {!isAuthenticated && (
@@ -36,7 +36,7 @@ const Home: React.FC = () => {
                             to="/register"
                             sx={{ mr: 2 }}
                         >
-                            Get Started
+                            Loslegen!
                         </Button>
                         <Button
                             variant="outlined"
@@ -44,7 +44,7 @@ const Home: React.FC = () => {
                             component={Link}
                             to="/login"
                         >
-                            Sign In
+                            Anmelden
                         </Button>
                     </Box>
                 )}
@@ -59,30 +59,6 @@ const Home: React.FC = () => {
                             </Typography>
                             <Typography variant="body2">
                                 Join battles in various sports and compete against other athletes.
-                            </Typography>
-                        </CardContent>
-                    </Card>
-                </Grid>
-                <Grid>
-                    <Card>
-                        <CardContent>
-                            <Typography variant="h5" component="h3" gutterBottom>
-                                📊 Track Progress
-                            </Typography>
-                            <Typography variant="body2">
-                                Monitor your performance and see how you rank against others.
-                            </Typography>
-                        </CardContent>
-                    </Card>
-                </Grid>
-                <Grid >
-                    <Card>
-                        <CardContent>
-                            <Typography variant="h5" component="h3" gutterBottom>
-                                🌟 Showcase Skills
-                            </Typography>
-                            <Typography variant="body2">
-                                Display your athletic abilities and build your reputation.
                             </Typography>
                         </CardContent>
                     </Card>

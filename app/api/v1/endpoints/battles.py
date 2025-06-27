@@ -2,12 +2,22 @@ from typing import List
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 from app.db.database import get_db
-from app.schemas.schemas import Battle, BattleCreate, BattleUpdate
+from app.schemas.schemas import (
+    Battle,
+    BattleCreate,
+    BattleParty,
+    Challenge,
+    ChallengeCreate,
+    Reward,
+    RewardCreate,
+)
 from app.services.battle_service import (
     create_battle,
     get_battle,
-    get_battles,
-    update_battle,
+    get_battles_for_user,
+    add_user_to_battle,
+    create_challenge,
+    create_reward,
     delete_battle,
 )
 
@@ -19,10 +29,11 @@ def create_battle_endpoint(battle: BattleCreate, db: Session = Depends(get_db)):
     return create_battle(db=db, battle=battle)
 
 
-@router.get("/", response_model=List[Battle])
-def read_battles(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
-    battles = get_battles(db, skip=skip, limit=limit)
-    return battles
+@router.get("/battles/user/{user_id}", response_model=List[Battle])
+def list_battles_endpoint(
+    user_id: int, skip: int = 0, limit: int = 100, db: Session = Depends(get_db)
+):
+    return get_battles_for_user(db, user_id, skip=skip, limit=limit)
 
 
 @router.get("/{battle_id}", response_model=Battle)
@@ -33,14 +44,25 @@ def read_battle(battle_id: int, db: Session = Depends(get_db)):
     return db_battle
 
 
-@router.put("/{battle_id}", response_model=Battle)
-def update_battle_endpoint(
-    battle_id: int, battle: BattleUpdate, db: Session = Depends(get_db)
+@router.post("/{battle_id}/join", response_model=BattleParty)
+def join_battle(battle_id: int, user_id: int, db: Session = Depends(get_db)):
+    return add_user_to_battle(db, battle_id, user_id)
+
+
+@router.post("/{battle_id}/challenge", response_model=Challenge)
+def create_challenge_endpoint(
+    battle_id: int, challenge: ChallengeCreate, db: Session = Depends(get_db)
 ):
-    db_battle = update_battle(db=db, battle_id=battle_id, battle=battle)
-    if db_battle is None:
-        raise HTTPException(status_code=404, detail="Battle not found")
-    return db_battle
+    # battle_id is required in challenge
+    return create_challenge(db, challenge)
+
+
+@router.post("/challenge/{challenge_id}/reward", response_model=Reward)
+def create_reward_endpoint(
+    challenge_id: int, reward: RewardCreate, db: Session = Depends(get_db)
+):
+    # challenge_id is required in reward
+    return create_reward(db, reward)
 
 
 @router.delete("/{battle_id}")

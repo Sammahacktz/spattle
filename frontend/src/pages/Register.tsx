@@ -34,7 +34,7 @@ const Register: React.FC = () => {
         setError('');
 
         if (formData.password !== formData.confirmPassword) {
-            setError('Passwords do not match');
+            setError('Passwörter stimmen nicht überein');
             return;
         }
 
@@ -48,7 +48,7 @@ const Register: React.FC = () => {
             });
             navigate('/login');
         } catch (err: any) {
-            setError(err.response?.data?.detail || 'Registration failed');
+            setError(err.response?.data?.detail || 'Regestrierung fehlgeschlagen');
         } finally {
             setIsLoading(false);
         }
@@ -66,7 +66,7 @@ const Register: React.FC = () => {
             >
                 <Paper elevation={3} sx={{ padding: 4, width: '100%' }}>
                     <Typography component="h1" variant="h4" align="center" gutterBottom>
-                        Sign Up
+                        Regestrieren
                     </Typography>
 
                     {error && (
@@ -129,11 +129,11 @@ const Register: React.FC = () => {
                             sx={{ mt: 3, mb: 2 }}
                             disabled={isLoading}
                         >
-                            {isLoading ? 'Creating Account...' : 'Sign Up'}
+                            {isLoading ? 'Creating Account...' : 'Anmelden'}
                         </Button>
                         <Box textAlign="center">
                             <Link to="/login">
-                                Already have an account? Sign In
+                                Du hast schon einen Account? Anmelden
                             </Link>
                         </Box>
                     </Box>

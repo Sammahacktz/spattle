@@ -1,5 +1,6 @@
 from typing import List, Union
-from pydantic import AnyHttpUrl, validator
+import json
+from pydantic import Field, field_validator, BaseModel
 from pydantic_settings import BaseSettings
 
 
@@ -17,24 +18,26 @@ class Settings(BaseSettings):
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 30
 
     # CORS
-    BACKEND_CORS_ORIGINS: List[AnyHttpUrl] = [
-        "http://localhost:3000",  # React dev server
-        "http://localhost:5173",  # Vite dev server
-        "http://127.0.0.1:3000",
-        "http://127.0.0.1:5173",
-    ]
+    BACKEND_CORS_ORIGINS: List[str] = Field(
+        default=[
+            "http://localhost:3000",
+            "http://localhost:5173",
+            "http://127.0.0.1:3000",
+            "http://127.0.0.1:5173",
+        ]
+    )
 
-    @validator("BACKEND_CORS_ORIGINS", pre=True)
-    def assemble_cors_origins(cls, v: Union[str, List[str]]) -> Union[List[str], str]:
-        if isinstance(v, str) and not v.startswith("["):
-            return [i.strip() for i in v.split(",")]
-        elif isinstance(v, (list, str)):
-            return v
-        raise ValueError(v)
-
-    class Config:
-        env_file = ".env"
-        case_sensitive = True
+    @field_validator("BACKEND_CORS_ORIGINS", mode="before")
+    @classmethod
+    def parse_cors_origins(cls, v):
+        if isinstance(v, str):
+            try:
+                # Try to parse as JSON
+                return json.loads(v)
+            except Exception:
+                # Fallback: comma-separated
+                return [i.strip() for i in v.split(",") if i.strip()]
+        return v
 
 
 settings = Settings()

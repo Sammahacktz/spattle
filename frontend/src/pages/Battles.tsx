@@ -23,24 +23,30 @@ import { battlesAPI } from '../services/api';
 import { Battle, BattleCreate } from '../types';
 
 const Battles: React.FC = () => {
+    const { isAuthenticated, user } = useAuth();
     const [battles, setBattles] = useState<Battle[]>([]);
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState('');
-    const [open, setOpen] = useState(false);
+    const [openCreate, setOpenCreate] = useState(false);
     const [formData, setFormData] = useState<BattleCreate>({
         title: '',
         description: '',
-        sport_type: '',
+        creator_id: user?.id || 0,
     });
-    const { isAuthenticated } = useAuth();
+    const [openJoin, setOpenJoin] = useState(false);
+    const [inviteCode, setInviteCode] = useState('');
 
     useEffect(() => {
-        loadBattles();
-    }, []);
+        if (user) {
+            loadUserBattles(user.id);
+        }
+    }, [user]);
 
-    const loadBattles = async () => {
+    const loadUserBattles = async (userId: number) => {
+        setIsLoading(true);
         try {
-            const data = await battlesAPI.getAll();
+            // Fetch battles where the user is a member (participant or creator)
+            const data = await battlesAPI.getByUser(userId);
             setBattles(data);
         } catch (err: any) {
             setError('Failed to load battles');
@@ -49,14 +55,29 @@ const Battles: React.FC = () => {
         }
     };
 
-    const handleSubmit = async () => {
+    const handleSubmitCreate = async () => {
+        if (!user) {
+            setError('You must be logged in to create a battle.');
+            return;
+        }
         try {
-            const newBattle = await battlesAPI.create(formData);
+            const newBattle = await battlesAPI.create({ ...formData, creator_id: user.id });
             setBattles([newBattle, ...battles]);
-            setOpen(false);
-            setFormData({ title: '', description: '', sport_type: '' });
+            setOpenCreate(false);
+            setFormData({ title: '', description: '', creator_id: user.id });
         } catch (err: any) {
             setError('Failed to create battle');
+        }
+    };
+
+    const handleSubmitJoin = async () => {
+        try {
+            const newBattle = await battlesAPI.join(inviteCode);
+            setBattles([newBattle, ...battles]);
+            setOpenJoin(false);
+            setInviteCode("")
+        } catch (err: any) {
+            setError("Beitritt fehlgeschlagen");
         }
     };
 
@@ -79,18 +100,27 @@ const Battles: React.FC = () => {
 
     return (
         <Container maxWidth="lg">
-            <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 4 }}>
+            <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'end', mb: 4 }}>
                 <Typography variant="h4" component="h1">
-                    Sport Battles
+                    Deine Battles
                 </Typography>
                 {isAuthenticated && (
-                    <Button
-                        variant="contained"
-                        startIcon={<AddIcon />}
-                        onClick={() => setOpen(true)}
-                    >
-                        Create Battle
-                    </Button>
+                    <>
+                        <Button
+                            variant="contained"
+                            startIcon={<AddIcon />}
+                            onClick={() => setOpenCreate(true)}
+                        >
+                            Battle erstellen
+                        </Button>
+                        <Button
+                            variant="contained"
+                            startIcon={<AddIcon />}
+                            onClick={() => setOpenJoin(true)}
+                        >
+                            Battle beitreten
+                        </Button>
+                    </>
                 )}
             </Box>
 
@@ -102,17 +132,17 @@ const Battles: React.FC = () => {
 
             <Grid container spacing={3}>
                 {battles.map((battle) => (
-                    <Grid item xs={12} sm={6} md={4} key={battle.id}>
+                    <Grid key={battle.id}>
                         <Card>
                             <CardContent>
                                 <Typography variant="h6" component="h3" gutterBottom>
                                     {battle.title}
                                 </Typography>
-                                <Typography variant="body2" color="text.secondary" paragraph>
+                                <Typography variant="body2" color="text.secondary">
                                     {battle.description || 'No description available'}
                                 </Typography>
                                 <Chip
-                                    label={battle.sport_type}
+                                    label={battle.title}
                                     color="primary"
                                     size="small"
                                     sx={{ mb: 1 }}
@@ -149,8 +179,32 @@ const Battles: React.FC = () => {
                 </Box>
             )}
 
+            {/* Join Battle Dialog */}
+            <Dialog open={openJoin} onClose={() => setOpenJoin(false)} maxWidth="sm" fullWidth>
+                <DialogTitle>Battle beitreten</DialogTitle>
+                <DialogContent>
+                    <TextField
+                        autoFocus
+                        margin="dense"
+                        name="inviteCode"
+                        label="Einladungscode"
+                        fullWidth
+                        variant="outlined"
+                        value={inviteCode}
+                        onChange={e => setInviteCode(e.target.value)}
+                        sx={{ mb: 2 }}
+                    />
+                </DialogContent>
+                <DialogActions>
+                    <Button onClick={() => setOpenJoin(false)}>Abbrechen</Button>
+                    <Button onClick={handleSubmitJoin} variant="contained">
+                        Battle beitreten!
+                    </Button>
+                </DialogActions>
+            </Dialog>
+
             {/* Create Battle Dialog */}
-            <Dialog open={open} onClose={() => setOpen(false)} maxWidth="sm" fullWidth>
+            <Dialog open={openCreate} onClose={() => setOpenCreate(false)} maxWidth="sm" fullWidth>
                 <DialogTitle>Create New Battle</DialogTitle>
                 <DialogContent>
                     <TextField
@@ -161,16 +215,6 @@ const Battles: React.FC = () => {
                         fullWidth
                         variant="outlined"
                         value={formData.title}
-                        onChange={handleChange}
-                        sx={{ mb: 2 }}
-                    />
-                    <TextField
-                        margin="dense"
-                        name="sport_type"
-                        label="Sport Type"
-                        fullWidth
-                        variant="outlined"
-                        value={formData.sport_type}
                         onChange={handleChange}
                         sx={{ mb: 2 }}
                     />
@@ -187,8 +231,8 @@ const Battles: React.FC = () => {
                     />
                 </DialogContent>
                 <DialogActions>
-                    <Button onClick={() => setOpen(false)}>Cancel</Button>
-                    <Button onClick={handleSubmit} variant="contained">
+                    <Button onClick={() => setOpenCreate(false)}>Cancel</Button>
+                    <Button onClick={handleSubmitCreate} variant="contained">
                         Create Battle
                     </Button>
                 </DialogActions>

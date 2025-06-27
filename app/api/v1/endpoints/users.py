@@ -2,7 +2,7 @@ from typing import List
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 from app.db.database import get_db
-from app.schemas.schemas import User, UserCreate, UserUpdate
+from app.schemas.schemas import User, UserCreate
 from app.services.user_service import (
     create_user,
     get_user,
@@ -39,7 +39,7 @@ def read_user(user_id: int, db: Session = Depends(get_db)):
 
 
 @router.put("/{user_id}", response_model=User)
-def update_user_endpoint(user_id: int, user: UserUpdate, db: Session = Depends(get_db)):
+def update_user_endpoint(user_id: int, user: User, db: Session = Depends(get_db)):
     db_user = update_user(db=db, user_id=user_id, user=user)
     if db_user is None:
         raise HTTPException(status_code=404, detail="User not found")

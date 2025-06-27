@@ -64,8 +64,11 @@ export const battlesAPI = {
         const response = await api.post('/battles/', battle);
         return response.data;
     },
-
-    getAll: async (): Promise<Battle[]> => {
+    join: async (invite: string): Promise<Battle> => {
+        const response = await api.post(`/battles/join/${invite}`);
+        return response.data;
+    },
+    getAllForUser: async (): Promise<Battle[]> => {
         const response = await api.get('/battles/');
         return response.data;
     },
@@ -82,5 +85,10 @@ export const battlesAPI = {
 
     delete: async (id: number): Promise<void> => {
         await api.delete(`/battles/${id}`);
+    },
+
+    getByUser: async (userId: number): Promise<Battle[]> => {
+        const response = await api.get(`/battles/user/${userId}`);
+        return response.data;
     },
 };

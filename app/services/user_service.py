@@ -2,7 +2,7 @@ from typing import Optional, List
 from sqlalchemy.orm import Session
 from passlib.context import CryptContext
 from app.models.models import User
-from app.schemas.schemas import UserCreate, UserUpdate
+from app.schemas.schemas import UserCreate
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
@@ -46,12 +46,12 @@ def create_user(db: Session, user: UserCreate) -> Optional[User]:
     return db_user
 
 
-def update_user(db: Session, user_id: int, user: UserUpdate) -> Optional[User]:
+def update_user(db: Session, user_id: int, user: User) -> Optional[User]:
     db_user = get_user(db, user_id)
     if not db_user:
         return None
 
-    update_data = user.dict(exclude_unset=True)
+    update_data = user.model_dump(exclude_unset=True)
     if "password" in update_data:
         update_data["hashed_password"] = get_password_hash(update_data.pop("password"))
 
