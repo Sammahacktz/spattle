@@ -51,6 +51,35 @@ cd spattle
 ./setup.sh
 ```
 
+### 2. Configure Environment Variables
+```bash
+# Copy the example file
+cp vars.sh.example vars.sh
+
+# Edit with your actual values
+nano vars.sh  # or use your preferred editor
+
+# Example content:
+export MYSQL_ROOT_PASSWORD="your_secure_root_password"
+export MYSQL_DATABASE="spattle_db"
+export MYSQL_USER="spattle_user" 
+export MYSQL_PASSWORD="your_secure_password"
+export SECRET_KEY="your-super-secret-jwt-key-change-this"
+# ... etc
+```
+
+### 3. Database Setup
+```bash
+# Load environment variables
+source vars.sh
+
+# Set up database
+./setup-db.sh
+
+# Run migrations
+poetry run alembic upgrade head
+```
+
 ### 2. Environment Configuration
 ```bash
 cp .env.example .env

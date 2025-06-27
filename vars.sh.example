@@ -1,0 +1,40 @@
+#!/bin/bash
+
+# Spattle Application Environment Variables - EXAMPLE
+# Copy this file to vars.sh and update with your actual values
+# DO NOT commit vars.sh to version control!
+
+# Database Configuration
+export MYSQL_ROOT_PASSWORD="your_secure_root_password_here"
+export MYSQL_DATABASE="spattle_db"
+export MYSQL_USER="spattle_user"
+export MYSQL_PASSWORD="your_secure_password_here"
+export DATABASE_URL="mysql+pymysql://${MYSQL_USER}:${MYSQL_PASSWORD}@localhost:3306/${MYSQL_DATABASE}"
+
+# For Docker development (internal network)
+export DATABASE_URL_DOCKER="mysql+pymysql://${MYSQL_USER}:${MYSQL_PASSWORD}@mysql:3306/${MYSQL_DATABASE}"
+
+# Security - CHANGE THESE IN PRODUCTION!
+export SECRET_KEY="your-super-secret-jwt-key-change-this-in-production"
+export ALGORITHM="HS256"
+export ACCESS_TOKEN_EXPIRE_MINUTES="30"
+
+# Application Configuration
+export PROJECT_NAME="Spattle API"
+export VERSION="0.1.0"
+export API_V1_STR="/api/v1"
+
+# CORS Origins (comma-separated for production)
+export BACKEND_CORS_ORIGINS="http://localhost:3000,http://localhost:5173,http://127.0.0.1:3000,http://127.0.0.1:5173"
+
+# Environment
+export ENVIRONMENT="development"
+
+# Frontend Configuration
+export REACT_APP_API_URL="http://localhost:8000"
+
+# Docker Configuration
+export COMPOSE_PROJECT_NAME="spattle"
+
+echo "Example environment variables loaded!"
+echo "Please copy this file to vars.sh and update with your actual values."

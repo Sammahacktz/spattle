@@ -5,10 +5,10 @@ services:
     image: mysql:8.0
     container_name: spattle_mysql_dev
     environment:
-      MYSQL_ROOT_PASSWORD: rootpassword
-      MYSQL_DATABASE: spattle_db
-      MYSQL_USER: spattle_user
-      MYSQL_PASSWORD: spattle_password
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
     ports:
       - "3306:3306"
     volumes:

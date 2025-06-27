@@ -3,7 +3,7 @@ version: '3.8'
 services:
   mysql:
     image: mysql:8.0
-    container_name: spattle_mysql
+    container_name: spattle_mysql_prod
     environment:
       MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
       MYSQL_DATABASE: ${MYSQL_DATABASE}
@@ -12,15 +12,18 @@ services:
     ports:
       - "3306:3306"
     volumes:
-      - mysql_data:/var/lib/mysql
+      - mysql_prod_data:/var/lib/mysql
+      - ./mysql-init:/docker-entrypoint-initdb.d
     networks:
-      - spattle_network
+      - spattle_prod_network
+    restart: unless-stopped
+    command: --default-authentication-plugin=mysql_native_password
 
   backend:
     build:
       context: .
       dockerfile: Dockerfile.backend
-    container_name: spattle_backend
+    container_name: spattle_backend_prod
     environment:
       DATABASE_URL: ${DATABASE_URL_DOCKER}
       SECRET_KEY: ${SECRET_KEY}
@@ -30,34 +33,38 @@ services:
       VERSION: ${VERSION}
       API_V1_STR: ${API_V1_STR}
       BACKEND_CORS_ORIGINS: ${BACKEND_CORS_ORIGINS}
-      ENVIRONMENT: ${ENVIRONMENT}
+      ENVIRONMENT: production
     ports:
       - "8000:8000"
     depends_on:
       - mysql
     networks:
-      - spattle_network
-    volumes:
-      - .:/app
-    command: ["sh", "-c", "poetry run alembic upgrade head && uvicorn app.main:app --host 0.0.0.0 --port 8000"]
+      - spattle_prod_network
+    restart: unless-stopped
+    command: ["sh", "-c", "poetry run alembic upgrade head && poetry run uvicorn app.main:app --host 0.0.0.0 --port 8000 --workers 4"]
 
   frontend:
     build:
       context: .
       dockerfile: Dockerfile.frontend
-    container_name: spattle_frontend
+    container_name: spattle_frontend_prod
     environment:
       REACT_APP_API_URL: http://backend:8000
     ports:
       - "80:80"
+      - "443:443"
     depends_on:
       - backend
     networks:
-      - spattle_network
+      - spattle_prod_network
+    restart: unless-stopped
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./ssl:/etc/nginx/ssl:ro  # For SSL certificates
 
 volumes:
-  mysql_data:
+  mysql_prod_data:
 
 networks:
-  spattle_network:
+  spattle_prod_network:
     driver: bridge

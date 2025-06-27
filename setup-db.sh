@@ -3,34 +3,28 @@
 # Database setup script
 echo "Setting up database..."
 
-# Check if .env file exists
-if [ ! -f .env ]; then
-    echo "Creating .env file from .env.example..."
-    cp .env.example .env
-    echo "Please edit .env file with your database credentials before proceeding."
+# Check if vars.sh file exists
+if [ ! -f vars.sh ]; then
+    echo "Error: vars.sh file not found!"
+    echo "Please create vars.sh file with your database credentials."
+    echo "You can copy from vars.sh.example if available."
     exit 1
 fi
 
 # Source environment variables
-source .env
-
-# Extract database credentials from DATABASE_URL
-DB_USER=$(echo $DATABASE_URL | sed -n 's|.*://\([^:]*\):.*|\1|p')
-DB_PASS=$(echo $DATABASE_URL | sed -n 's|.*://[^:]*:\([^@]*\)@.*|\1|p')
-DB_HOST=$(echo $DATABASE_URL | sed -n 's|.*@\([^:]*\):.*|\1|p')
-DB_NAME=$(echo $DATABASE_URL | sed -n 's|.*/\([^?]*\).*|\1|p')
+source vars.sh
 
 echo "Database configuration:"
-echo "Host: $DB_HOST"
-echo "User: $DB_USER"
-echo "Database: $DB_NAME"
+echo "Host: localhost"
+echo "User: $MYSQL_USER"
+echo "Database: $MYSQL_DATABASE"
 
 # Create database if it doesn't exist
 echo "Creating database if it doesn't exist..."
-mysql -h $DB_HOST -u root -p -e "CREATE DATABASE IF NOT EXISTS $DB_NAME;"
-mysql -h $DB_HOST -u root -p -e "CREATE USER IF NOT EXISTS '$DB_USER'@'%' IDENTIFIED BY '$DB_PASS';"
-mysql -h $DB_HOST -u root -p -e "GRANT ALL PRIVILEGES ON $DB_NAME.* TO '$DB_USER'@'%';"
-mysql -h $DB_HOST -u root -p -e "FLUSH PRIVILEGES;"
+mysql -h localhost -u root -p -e "CREATE DATABASE IF NOT EXISTS $MYSQL_DATABASE;"
+mysql -h localhost -u root -p -e "CREATE USER IF NOT EXISTS '$MYSQL_USER'@'%' IDENTIFIED BY '$MYSQL_PASSWORD';"
+mysql -h localhost -u root -p -e "GRANT ALL PRIVILEGES ON $MYSQL_DATABASE.* TO '$MYSQL_USER'@'%';"
+mysql -h localhost -u root -p -e "FLUSH PRIVILEGES;"
 
 # Run migrations
 echo "Running database migrations..."

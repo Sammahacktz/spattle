@@ -66,14 +66,16 @@ spattle/
 
 3. **Set up environment variables**
    ```bash
-   cp .env.example .env
-   # Edit .env with your database credentials
+   cp vars.sh.example vars.sh
+   # Edit vars.sh with your actual database credentials and secrets
+   # IMPORTANT: vars.sh is ignored by git for security
    ```
 
 4. **Set up the database**
    ```bash
-   # Create MySQL database
-   mysql -u root -p -e "CREATE DATABASE spattle_db;"
+   # Load environment variables and set up database
+   source vars.sh
+   ./setup-db.sh
    
    # Run migrations
    poetry run alembic upgrade head
@@ -81,22 +83,28 @@ spattle/
 
 ### Running the Application
 
-#### Backend (FastAPI)
+#### Using Helper Scripts (Recommended)
 ```bash
-# Development server with auto-reload
+# Start backend (automatically loads vars.sh)
+./start-backend.sh
+
+# Start frontend (automatically loads vars.sh)
+./start-frontend.sh
+```
+
+#### Manual Commands
+```bash
+# Backend (FastAPI)
+source vars.sh  # Load environment variables
 poetry run uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
 
-# The API will be available at http://localhost:8000
-# API documentation at http://localhost:8000/docs
-```
-
-#### Frontend (React)
-```bash
+# Frontend (React)
 cd frontend
 npm start
-
-# The frontend will be available at http://localhost:3000
 ```
+
+The API will be available at http://localhost:8000
+The frontend will be available at http://localhost:3000
 
 ## API Documentation
 
@@ -171,20 +179,30 @@ poetry run alembic downgrade -1
 
 ### Environment Variables
 
-Copy `.env.example` to `.env` and configure:
+Copy `vars.sh.example` to `vars.sh` and configure your secrets:
 
-```env
-# Database
-DATABASE_URL=mysql+pymysql://username:password@localhost:3306/spattle_db
+```bash
+# Database Configuration
+export MYSQL_ROOT_PASSWORD="your_secure_root_password_here"
+export MYSQL_DATABASE="spattle_db"
+export MYSQL_USER="spattle_user"
+export MYSQL_PASSWORD="your_secure_password_here"
+export DATABASE_URL="mysql+pymysql://${MYSQL_USER}:${MYSQL_PASSWORD}@localhost:3306/${MYSQL_DATABASE}"
 
-# Security
-SECRET_KEY=your-secret-key-here
-ALGORITHM=HS256
-ACCESS_TOKEN_EXPIRE_MINUTES=30
+# Security - CHANGE THESE IN PRODUCTION!
+export SECRET_KEY="your-super-secret-jwt-key-change-this-in-production"
+export ALGORITHM="HS256"
+export ACCESS_TOKEN_EXPIRE_MINUTES="30"
 
-# Frontend
-REACT_APP_API_URL=http://localhost:8000
+# Frontend Configuration
+export REACT_APP_API_URL="http://localhost:8000"
 ```
+
+**Important Security Notes:**
+- `vars.sh` is automatically ignored by git to prevent accidentally committing secrets
+- Always use strong, unique passwords in production
+- Change the default SECRET_KEY before deploying
+- Consider using a secrets management service for production deployments
 
 ## Contributing
 

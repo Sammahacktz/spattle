@@ -4,16 +4,10 @@
         {
             "label": "Start Backend",
             "type": "shell",
-            "command": "poetry",
+            "command": "bash",
             "args": [
-                "run",
-                "uvicorn",
-                "app.main:app",
-                "--reload",
-                "--host",
-                "0.0.0.0",
-                "--port",
-                "8000"
+                "-c",
+                "source vars.sh 2>/dev/null || true && poetry run uvicorn app.main:app --reload --host 0.0.0.0 --port 8000"
             ],
             "group": {
                 "kind": "build",
@@ -33,9 +27,10 @@
         {
             "label": "Start Frontend",
             "type": "shell",
-            "command": "npm",
+            "command": "bash",
             "args": [
-                "start"
+                "-c",
+                "source ../vars.sh 2>/dev/null || true && npm start"
             ],
             "options": {
                 "cwd": "${workspaceFolder}/frontend"
@@ -95,12 +90,10 @@
         {
             "label": "Run Database Migrations",
             "type": "shell",
-            "command": "poetry",
+            "command": "bash",
             "args": [
-                "run",
-                "alembic",
-                "upgrade",
-                "head"
+                "-c",
+                "source vars.sh 2>/dev/null || true && poetry run alembic upgrade head"
             ],
             "group": "build",
             "presentation": {
