@@ -60,6 +60,10 @@ export const usersAPI = {
 
 // Battles API
 export const battlesAPI = {
+    getBattleUsers: async (battle_id: number): Promise<User[]> => {
+        const response = await api.get(`/battles/${battle_id}/members/`);
+        return response.data;
+    },
     create: async (battle: BattleCreate): Promise<Battle> => {
         const response = await api.post('/battles/', battle);
         return response.data;

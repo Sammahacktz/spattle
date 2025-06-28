@@ -1,6 +1,6 @@
 from typing import Optional, List
 from sqlalchemy.orm import Session
-from app.models.models import Battle, BattleParty, Challenge, Reward
+from app.models.models import Battle, BattleParty, Challenge, Reward, User
 from app.schemas.schemas import (
     BattleCreate,
     ChallengeBase,
@@ -96,3 +96,12 @@ def delete_battle(db: Session, battle_id: int) -> bool:
     db_battle.is_active = False
     db.commit()
     return True
+
+
+def get_battle_members(db: Session, battle_id: int) -> list[User]:
+    return (
+        db.query(User)
+        .join(BattleParty, BattleParty.user_id == User.id)
+        .filter(BattleParty.battle_id == battle_id)
+        .all()
+    )

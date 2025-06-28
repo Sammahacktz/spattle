@@ -68,6 +68,19 @@ export interface Challenge {
     rewards: Reward[];
 }
 
+export interface ChallengeCreate {
+    title?: string;
+    description?: string;
+    value: number;
+    max_value: number;
+    assigned_user?: User;
+    rewards: RewardCreate[];
+    assigned_user_id: number;
+    partycode: string;
+    creator_id: number;
+    icon?: string;
+}
+
 export interface Reward {
     id: number;
     title: string;
@@ -77,4 +90,11 @@ export interface Reward {
     user_id?: number;
     challenge?: Challenge;
     user?: User;
+}
+
+export interface RewardCreate {
+    title: string;
+    description: string;
+    target: number;
+    challenge_id: number;
 }

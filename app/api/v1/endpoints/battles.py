@@ -11,6 +11,7 @@ from app.schemas.schemas import (
     ChallengeCreate,
     Reward,
     RewardCreate,
+    UserSummary,
 )
 from app.services.battle_service import (
     create_battle,
@@ -21,6 +22,7 @@ from app.services.battle_service import (
     create_reward,
     delete_battle,
     get_battles_where_user_is_member,
+    get_battle_members,
 )
 from app.services.auth_service import get_current_user
 
@@ -30,6 +32,13 @@ router = APIRouter()
 @router.post("/", response_model=Battle, status_code=status.HTTP_201_CREATED)
 def create_battle_endpoint(battle: BattleCreate, db: Session = Depends(get_db)):
     return create_battle(db=db, battle=battle)
+
+
+@router.get("/{battle_id}/members/", response_model=List[UserSummary])
+def list_battle_members(
+    battle_id: int, skip: int = 0, limit: int = 100, db: Session = Depends(get_db)
+):
+    return get_battle_members(db, battle_id)
 
 
 @router.get("/user/{user_id}", response_model=List[Battle])
