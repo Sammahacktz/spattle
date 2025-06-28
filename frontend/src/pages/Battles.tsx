@@ -3,25 +3,20 @@ import {
     Alert,
     Box,
     Button,
-    Card,
-    CardActions,
-    CardContent,
-    Chip,
     CircularProgress,
     Container,
     Dialog,
     DialogActions,
     DialogContent,
     DialogTitle,
-    Grid,
     TextField,
-    Typography,
+    Typography
 } from '@mui/material';
 import React, { useEffect, useState } from 'react';
+import { BattleGrid } from '../components/BattleGrid';
 import { useAuth } from '../contexts/AuthContext';
 import { battlesAPI } from '../services/api';
 import { Battle, BattleCreate } from '../types';
-
 const Battles: React.FC = () => {
     const { isAuthenticated, user } = useAuth();
     const [battles, setBattles] = useState<Battle[]>([]);
@@ -104,24 +99,6 @@ const Battles: React.FC = () => {
                 <Typography variant="h4" component="h1">
                     Deine Battles
                 </Typography>
-                {isAuthenticated && (
-                    <>
-                        <Button
-                            variant="contained"
-                            startIcon={<AddIcon />}
-                            onClick={() => setOpenCreate(true)}
-                        >
-                            Battle erstellen
-                        </Button>
-                        <Button
-                            variant="contained"
-                            startIcon={<AddIcon />}
-                            onClick={() => setOpenJoin(true)}
-                        >
-                            Battle beitreten
-                        </Button>
-                    </>
-                )}
             </Box>
 
             {error && (
@@ -130,54 +107,46 @@ const Battles: React.FC = () => {
                 </Alert>
             )}
 
-            <Grid container spacing={3}>
-                {battles.map((battle) => (
-                    <Grid key={battle.id}>
-                        <Card>
-                            <CardContent>
-                                <Typography variant="h6" component="h3" gutterBottom>
-                                    {battle.title}
-                                </Typography>
-                                <Typography variant="body2" color="text.secondary">
-                                    {battle.description || 'No description available'}
-                                </Typography>
-                                <Chip
-                                    label={battle.title}
-                                    color="primary"
-                                    size="small"
-                                    sx={{ mb: 1 }}
-                                />
-                                <Typography variant="caption" display="block" color="text.secondary">
-                                    Created: {new Date(battle.created_at).toLocaleDateString()}
-                                </Typography>
-                            </CardContent>
-                            <CardActions>
-                                <Button size="small" color="primary">
-                                    View Details
-                                </Button>
-                                {isAuthenticated && (
-                                    <Button size="small" color="secondary">
-                                        Join Battle
-                                    </Button>
-                                )}
-                            </CardActions>
-                        </Card>
-                    </Grid>
-                ))}
-            </Grid>
-
-            {battles.length === 0 && !error && (
-                <Box textAlign="center" py={8}>
-                    <Typography variant="h6" color="text.secondary">
-                        No battles available yet.
-                    </Typography>
+            <div>
+                <div>
+                    <h2>Deine Battles:</h2>
                     {isAuthenticated && (
-                        <Typography variant="body2" color="text.secondary">
-                            Be the first to create one!
-                        </Typography>
+                        <>
+                            <Button
+                                variant="contained"
+                                startIcon={<AddIcon />}
+                                onClick={() => setOpenCreate(true)}
+                            >
+                                Battle erstellen
+                            </Button>
+                        </>
                     )}
-                </Box>
-            )}
+                    <BattleGrid
+                        battles={battles.filter((battle) => battle.creator_id === user?.id)}
+                        isAuthenticated={isAuthenticated}
+                        error={error}
+                    />
+                </div>
+                <div>
+                    <h2>Battles an denen du teilnimmst:</h2>
+                    {isAuthenticated && (
+                        <>
+                            <Button
+                                variant="contained"
+                                startIcon={<AddIcon />}
+                                onClick={() => setOpenJoin(true)}
+                            >
+                                Battle beitreten
+                            </Button>
+                        </>
+                    )}
+                    <BattleGrid
+                        battles={battles.filter((battle) => battle.creator_id !== user?.id)}
+                        isAuthenticated={isAuthenticated}
+                        error={error}
+                    />
+                </div>
+            </div>
 
             {/* Join Battle Dialog */}
             <Dialog open={openJoin} onClose={() => setOpenJoin(false)} maxWidth="sm" fullWidth>

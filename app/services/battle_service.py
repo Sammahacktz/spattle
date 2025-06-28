@@ -18,6 +18,18 @@ def get_battles_for_user(
 ) -> List[Battle]:
     return (
         db.query(Battle)
+        .filter(Battle.creator_id == user_id)
+        .offset(skip)
+        .limit(limit)
+        .all()
+    )
+
+
+def get_battles_where_user_is_member(
+    db: Session, user_id: int, skip: int = 0, limit: int = 100
+) -> List[Battle]:
+    return (
+        db.query(Battle)
         .join(BattleParty)
         .filter(BattleParty.user_id == user_id)
         .offset(skip)
@@ -34,12 +46,14 @@ def create_battle(db: Session, battle: BattleCreate) -> Battle:
     return db_battle
 
 
-def add_user_to_battle(db: Session, battle_id: int, user_id: int) -> BattleParty:
-    party = BattleParty(battle_id=battle_id, user_id=user_id)
+def add_user_to_battle(db: Session, party_code: int, user_id: int) -> Battle:
+    battle = db.query(Battle).filter(Battle.partycode == party_code).first()
+    print(battle.title)
+    party = BattleParty(battle_id=battle.id, user_id=user_id)
     db.add(party)
     db.commit()
     db.refresh(party)
-    return party
+    return battle
 
 
 def create_challenge(db: Session, challenge: ChallengeBase) -> Challenge:

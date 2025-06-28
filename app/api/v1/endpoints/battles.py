@@ -2,6 +2,7 @@ from typing import List
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 from app.db.database import get_db
+from app.models.models import User
 from app.schemas.schemas import (
     Battle,
     BattleCreate,
@@ -19,7 +20,9 @@ from app.services.battle_service import (
     create_challenge,
     create_reward,
     delete_battle,
+    get_battles_where_user_is_member,
 )
+from app.services.auth_service import get_current_user
 
 router = APIRouter()
 
@@ -29,11 +32,15 @@ def create_battle_endpoint(battle: BattleCreate, db: Session = Depends(get_db)):
     return create_battle(db=db, battle=battle)
 
 
-@router.get("/battles/user/{user_id}", response_model=List[Battle])
+@router.get("/user/{user_id}", response_model=List[Battle])
 def list_battles_endpoint(
     user_id: int, skip: int = 0, limit: int = 100, db: Session = Depends(get_db)
 ):
-    return get_battles_for_user(db, user_id, skip=skip, limit=limit)
+    params = {"db": db, "user_id": user_id, "skip": skip, "limit": limit}
+    return [
+        *get_battles_for_user(**params),
+        *get_battles_where_user_is_member(**params),
+    ]
 
 
 @router.get("/{battle_id}", response_model=Battle)
@@ -44,9 +51,13 @@ def read_battle(battle_id: int, db: Session = Depends(get_db)):
     return db_battle
 
 
-@router.post("/{battle_id}/join", response_model=BattleParty)
-def join_battle(battle_id: int, user_id: int, db: Session = Depends(get_db)):
-    return add_user_to_battle(db, battle_id, user_id)
+@router.post("/join/{party_code}", response_model=Battle)
+def join_battle(
+    party_code: str,
+    user: User = Depends(get_current_user),
+    db: Session = Depends(get_db),
+):
+    return add_user_to_battle(db, party_code, user.id)
 
 
 @router.post("/{battle_id}/challenge", response_model=Challenge)

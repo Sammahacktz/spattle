@@ -93,15 +93,10 @@ class UserCreate(UserBase):
     password: str
 
 
-class User(BaseModel):
+class UserSummary(UserBase):
     id: int
-    username: str
-    email: EmailStr
     distance_overall: float
     created_at: datetime
-    battles_created: list["Battle"] = []
-    participations: list["BattleParty"] = []
-    gained_rewards: list["Reward"] = []
 
     class Config:
         from_attributes = True
@@ -116,7 +111,7 @@ class BattlePartyBase(BaseModel):
 class BattleParty(BattlePartyBase):
     id: int
     joined_at: datetime
-    user: Optional[User] = None
+    user: Optional[UserSummary] = None
 
     class Config:
         from_attributes = True
@@ -132,7 +127,18 @@ class BattleCreate(BattleBase):
     creator_id: int
 
 
-class Battle(BaseModel):
+class BattleSummary(BattleBase):
+    id: int
+    partycode: str
+    created_at: datetime
+    updated_at: datetime
+    is_active: bool
+
+    class Config:
+        from_attributes = True
+
+
+class Battle(BattleBase):
     id: int
     title: str
     partycode: str
@@ -140,13 +146,13 @@ class Battle(BaseModel):
     created_at: datetime
     updated_at: datetime
     creator_id: int
-    party: list["BattleParty"] = []
-    challenges: list["Challenge"] = []
+    creator: Optional[UserSummary] = None
+    party: list[BattleParty] = []
+    challenges: list["ChallengeSummary"] = []
     is_active: bool
 
     class Config:
         from_attributes = True
-        orm_mode = True
 
 
 # Challenge schemas
@@ -165,13 +171,21 @@ class ChallengeCreate(ChallengeBase):
     pass
 
 
+class ChallengeSummary(ChallengeBase):
+    id: int
+    created_at: datetime
+
+    class Config:
+        from_attributes = True
+
+
 class Challenge(ChallengeBase):
     id: int
     created_at: datetime
-    battle: Optional[Battle] = None
-    creator: Optional[User] = None
-    assigned_user: Optional[User] = None
-    rewards: list["Reward"] = []
+    battle: Optional[BattleSummary] = None
+    creator: Optional[UserSummary] = None
+    assigned_user: Optional[UserSummary] = None
+    rewards: list["RewardSummary"] = []
 
     class Config:
         from_attributes = True
@@ -190,10 +204,17 @@ class RewardCreate(RewardBase):
     pass
 
 
+class RewardSummary(RewardBase):
+    id: int
+
+    class Config:
+        from_attributes = True
+
+
 class Reward(RewardBase):
     id: int
-    challenge: Optional[Challenge] = None
-    user: Optional[User] = None
+    challenge: Optional[ChallengeSummary] = None
+    user: Optional[UserSummary] = None
 
     class Config:
         from_attributes = True

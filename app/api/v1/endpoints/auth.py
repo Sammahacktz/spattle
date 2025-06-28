@@ -2,7 +2,7 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 from sqlalchemy.orm import Session
 from app.db.database import get_db
-from app.schemas.schemas import Token, User
+from app.schemas.schemas import Token, UserSummary
 from app.services.auth_service import (
     authenticate_user,
     create_access_token,
@@ -28,6 +28,6 @@ async def login_for_access_token(
     return {"access_token": access_token, "token_type": "bearer"}
 
 
-@router.get("/me", response_model=User)
-async def read_users_me(current_user: User = Depends(get_current_user)):
+@router.get("/me", response_model=UserSummary)
+async def read_users_me(current_user: UserSummary = Depends(get_current_user)):
     return current_user

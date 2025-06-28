@@ -9,8 +9,8 @@ export interface User {
 
 export interface Battle {
     id: number;
-    title: string;
     partycode: string;
+    title: string;
     description?: string;
     created_at: string;
     updated_at: string;
@@ -18,6 +18,7 @@ export interface Battle {
     party: BattleParty[];
     challenges: Challenge[];
     is_active: boolean;
+    creator_id: number;
 }
 
 export interface UserCreate {

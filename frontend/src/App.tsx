@@ -5,6 +5,7 @@ import { AuthProvider } from './contexts/AuthContext';
 import Battles from './pages/Battles';
 import Home from './pages/Home';
 import Login from './pages/Login';
+import Party from './pages/Party';
 import Register from './pages/Register';
 
 
@@ -19,6 +20,7 @@ function App() {
             <Route path="/battles" element={<Battles />} />
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />
+            <Route path="/battle/party/:party_id" element={<Party />} />
           </Routes>
         </Container>
       </Router>
