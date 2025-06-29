@@ -15,6 +15,7 @@ from app.schemas.schemas import (
 )
 from app.services.battle_service import (
     create_battle,
+    get_all_challenges_for_battle,
     get_battle,
     get_battles_for_user,
     add_user_to_battle,
@@ -82,17 +83,22 @@ def create_challenge_endpoint(
     return get_challenge(db, empty_challenge.id)
 
 
-@router.post("/challenge/{challenge_id}/reward", response_model=Reward)
-def create_reward_endpoint(
-    challenge_id: int, reward: RewardCreate, db: Session = Depends(get_db)
-):
-    # challenge_id is required in reward
-    return create_reward(db, reward)
+@router.get("/{partycode}/challenges/", response_model=list[Challenge])
+def create_challenge_endpoint(partycode: str, db: Session = Depends(get_db)):
+    return get_all_challenges_for_battle(db, partycode)
 
 
-@router.delete("/{battle_id}")
-def delete_battle_endpoint(battle_id: int, db: Session = Depends(get_db)):
-    success = delete_battle(db=db, battle_id=battle_id)
-    if not success:
-        raise HTTPException(status_code=404, detail="Battle not found")
-    return {"message": "Battle deleted successfully"}
+# @router.post("/challenge/{challenge_id}/reward", response_model=Reward)
+# def create_reward_endpoint(
+#     challenge_id: int, reward: RewardCreate, db: Session = Depends(get_db)
+# ):
+#     # challenge_id is required in reward
+#     return create_reward(db, reward)
+
+
+# @router.delete("/{battle_id}")
+# def delete_battle_endpoint(battle_id: int, db: Session = Depends(get_db)):
+#     success = delete_battle(db=db, battle_id=battle_id)
+#     if not success:
+#         raise HTTPException(status_code=404, detail="Battle not found")
+#     return {"message": "Battle deleted successfully"}

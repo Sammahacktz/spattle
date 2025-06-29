@@ -9,6 +9,13 @@ from app.schemas.schemas import (
 )
 
 
+def get_all_challenges_for_battle(db: Session, partycode: str) -> list[Challenge]:
+    battle = db.query(Battle).filter(Battle.partycode == partycode).first()
+    if not battle:
+        return []
+    return db.query(Challenge).filter(Challenge.battle_id == battle.id).all()
+
+
 def get_challenge(db: Session, challenge_id: int) -> Challenge:
     return db.query(Challenge).filter(Challenge.id == challenge_id).first()
 
@@ -108,9 +115,17 @@ def delete_battle(db: Session, battle_id: int) -> bool:
 
 
 def get_battle_members(db: Session, battle_id: int) -> list[User]:
-    return (
+    # Get users who are members via BattleParty
+    members = (
         db.query(User)
         .join(BattleParty, BattleParty.user_id == User.id)
         .filter(BattleParty.battle_id == battle_id)
         .all()
     )
+    # Get the creator
+    battle = db.query(Battle).filter(Battle.id == battle_id).first()
+    if battle and battle.creator_id:
+        creator = db.query(User).filter(User.id == battle.creator_id).first()
+        if creator and creator not in members:
+            members.append(creator)
+    return members

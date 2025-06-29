@@ -165,6 +165,8 @@ class ChallengeBase(BaseModel):
     partycode: str | None = None
     creator_id: int
     assigned_user_id: int
+    start_datetime: datetime
+    end_datetime: datetime
 
 
 class ChallengeCreate(ChallengeBase):

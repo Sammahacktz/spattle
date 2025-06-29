@@ -11,12 +11,12 @@ import {
     DialogContent,
     DialogTitle,
     IconButton,
-    Slider,
     TextField,
     Typography
 } from '@mui/material';
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
+import { CustomProgressBar } from '../components/ChallengeMeter';
 import { useAuth } from '../contexts/AuthContext';
 import { battlesAPI } from '../services/api';
 import { Challenge, ChallengeCreate, RewardCreate, User } from '../types';
@@ -40,6 +40,8 @@ export const Party: React.FC = () => {
         creator_id: user?.id || 0,
         value: 0,
         icon: '🏁',
+        start_datetime: '',
+        end_datetime: '',
         rewards: [
             { title: '', description: '', target: 0, challenge_id: 0 }
         ]
@@ -48,6 +50,7 @@ export const Party: React.FC = () => {
     useEffect(() => {
         if (user) {
             loadUserBattles(user.id);
+            loadChallengesForBattle(partycode!);
         }
     }, [user]);
 
@@ -60,6 +63,17 @@ export const Party: React.FC = () => {
             setError('Failed to load battles');
         }
     };
+
+    const loadChallengesForBattle = async (partycode: string) => {
+        try {
+            // Fetch battles where the user is a member (participant or creator)
+            const data = await battlesAPI.getChallengesForBattle(partycode);
+            setChanllenges(data);
+        } catch (err: any) {
+            setError('Failed to load battles');
+        }
+    };
+
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
         setForm({ ...form, [e.target.name]: e.target.value });
@@ -113,9 +127,6 @@ export const Party: React.FC = () => {
         }
 
     }
-    const handleSliderChange = (_: any, value: number | number[]) => {
-        setForm({ ...form, value: Array.isArray(value) ? value[0] : value });
-    };
 
     return (
         <Container maxWidth="lg" className='home-video'>
@@ -125,6 +136,7 @@ export const Party: React.FC = () => {
                     {error}
                 </Alert>
             )}
+
             <Box>
                 <Button variant="contained" onClick={() => setOpen(true)}>
                     Challenge erstellen
@@ -132,7 +144,7 @@ export const Party: React.FC = () => {
                 <Dialog open={open} onClose={() => setOpen(false)} maxWidth="md" fullWidth>
                     <DialogTitle>Neue Challenge erstellen</DialogTitle>
                     <DialogContent>
-                        <Box sx={{ mb: 2 }}>
+                        <Box sx={{ mb: 2, pt: 5 }}>
                             <TextField
                                 label="Titel"
                                 name="title"
@@ -151,35 +163,27 @@ export const Party: React.FC = () => {
                                 rows={2}
                                 sx={{ mb: 2 }}
                             />
-                            <Box display="flex" alignItems="center" gap={2}>
-                                <Box flex={1}>
-                                    <Slider
-                                        slots={{
-                                            thumb: (props) => (
-                                                <span {...props} aria-disabled={true} role="slider" style={{ fontSize: 24 }}>
-                                                    🏃‍➡️
-                                                </span>
-                                            )
-                                        }}
-                                        value={form.value}
-                                        min={0}
-                                        max={form.max_value}
-                                        step={1}
-                                        marks={form.rewards.map((r, i) => ({ value: r.target, label: r.title || `Reward ${i + 1}` }))}
-                                        onChange={handleSliderChange}
-                                    />
-                                </Box>
-                                <Box width={120}>
-                                    <TextField
-                                        label="Max Value"
-                                        name="max_value"
-                                        type="number"
-                                        value={form.max_value}
-                                        onChange={e => setForm({ ...form, max_value: Number(e.target.value) })}
-                                        fullWidth
-                                    />
-                                </Box>
-                            </Box>
+                            <TextField
+                                label="Startzeitpunkt"
+                                name="start_datetime"
+                                type="datetime-local"
+                                value={form.start_datetime}
+                                onChange={handleChange}
+                                fullWidth
+                                sx={{ mb: 2 }}
+                                slotProps={{ inputLabel: { shrink: true } }}
+
+                            />
+                            <TextField
+                                label="Endzeitpunkt"
+                                name="end_datetime"
+                                type="datetime-local"
+                                value={form.end_datetime}
+                                onChange={handleChange}
+                                fullWidth
+                                sx={{ mb: 2 }}
+                                slotProps={{ inputLabel: { shrink: true } }}
+                            />
                             <Autocomplete
                                 options={users}
                                 getOptionLabel={(option) => option.username}
@@ -196,12 +200,31 @@ export const Party: React.FC = () => {
                                     />
                                 )}
                             />
+                            <Box display="flex" alignItems="center" gap={2}>
+                                <Box flex={1}>
+                                    <CustomProgressBar
+                                        value={form.value}
+                                        max={form.max_value}
+                                        rewards={form.rewards}
+                                    />
+                                </Box>
+                                <Box width={120}>
+                                    <TextField
+                                        label="Max. Kilometer"
+                                        name="max_value"
+                                        type="number"
+                                        value={form.max_value}
+                                        onChange={e => setForm({ ...form, max_value: Number(e.target.value) })}
+                                        fullWidth
+                                    />
+                                </Box>
+                            </Box>
                             <Box sx={{ mt: 3 }}>
-                                <Typography variant="subtitle1">Rewards</Typography>
+                                <Typography variant="subtitle1">Belohnungen</Typography>
                                 {form.rewards.map((reward, idx) => (
                                     <Box display="flex" alignItems="center" gap={2} key={idx} sx={{ mb: 1 }}>
                                         <TextField
-                                            label="Reward Title"
+                                            label="Name"
                                             value={reward.title}
                                             onChange={e => handleRewardChange(idx, 'title', e.target.value)}
                                             sx={{ flex: 1 }}
@@ -213,7 +236,7 @@ export const Party: React.FC = () => {
                                             sx={{ flex: 2 }}
                                         />
                                         <TextField
-                                            label="Target"
+                                            label="bei Kilometer"
                                             type="number"
                                             value={reward.target}
                                             onChange={e => handleRewardChange(idx, 'target', Number(e.target.value))}
@@ -238,8 +261,49 @@ export const Party: React.FC = () => {
                     </DialogActions>
                 </Dialog>
             </Box>
+            <Box display="flex" flexWrap="wrap" gap={2} mt={3}>
+                {challenges.map((challenge) => (
+                    <Box
+                        key={challenge.id}
+                        sx={{
+                            border: '1px solid #ddd',
+                            borderRadius: 2,
+                            p: 2,
+                            minWidth: 300,
+                            boxShadow: 1,
+                            background: '#fff',
+                        }}
+                    >
+                        <Typography variant="h6" gutterBottom>
+                            {challenge.title}
+                        </Typography>
+                        <Typography variant="body2" color="text.secondary" gutterBottom>
+                            {challenge.description}
+                        </Typography>
+                        <Typography variant="body2">
+                            Max: {challenge.max_value} km
+                        </Typography>
+                        <Typography variant="body2">
+                            Fortschritt: {challenge.value} / {challenge.max_value} km
+                        </Typography>
+                        <Box mt={1}>
+                            <CustomProgressBar
+                                value={challenge.value}
+                                max={challenge.max_value!}
+                                rewards={challenge.rewards!}
+                            />
+                        </Box>
+                        <Box mt={1}>
+                            <Typography variant="caption" color="text.secondary">
+                                {challenge.start_datetime} - {challenge.end_datetime}
+                            </Typography>
+                        </Box>
+                    </Box>
+                ))}
+            </Box>
         </Container>
     );
 };
+
 
 export default Party;

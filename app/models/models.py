@@ -85,6 +85,8 @@ class Challenge(Base):
     icon = Column(String(255), nullable=True)
     value = Column(Float, nullable=False)
     max_value = Column(Float, nullable=True)
+    start_datetime = Column(DateTime, nullable=False)
+    end_datetime = Column(DateTime, nullable=False)
     battle_id = Column(Integer, ForeignKey("battles.id"), nullable=False)
     creator_id = Column(Integer, ForeignKey("users.id"), nullable=False)
     assigned_user_id = Column(

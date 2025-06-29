@@ -62,6 +62,8 @@ export interface Challenge {
     creator_id: number;
     assigned_user_id: number;
     created_at: string;
+    start_datetime?: string;
+    end_datetime?: string;
     battle?: Battle;
     creator?: User;
     assigned_user?: User;
@@ -79,6 +81,8 @@ export interface ChallengeCreate {
     partycode: string;
     creator_id: number;
     icon?: string;
+    start_datetime?: string;
+    end_datetime?: string;
 }
 
 export interface Reward {
