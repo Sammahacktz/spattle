@@ -20,7 +20,7 @@ function App() {
             <Route path="/battles" element={<Battles />} />
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />
-            <Route path="/battle/party/:party_id" element={<Party />} />
+            <Route path="/battle/party/:partycode" element={<Party />} />
           </Routes>
         </Container>
       </Router>

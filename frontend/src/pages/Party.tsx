@@ -91,7 +91,8 @@ export const Party: React.FC = () => {
             return;
         }
         try {
-            const newChallenge = await battlesAPI.createChallenge({ ...form, creator_id: user.id });
+            console.log(partycode)
+            const newChallenge = await battlesAPI.createChallenge({ ...form, creator_id: user.id, partycode: partycode! });
             setChanllenges([newChallenge, ...challenges]);
             setOpen(false);
             setForm({

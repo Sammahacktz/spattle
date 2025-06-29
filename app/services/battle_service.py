@@ -50,9 +50,8 @@ def create_battle(db: Session, battle: BattleCreate) -> Battle:
     return db_battle
 
 
-def add_user_to_battle(db: Session, party_code: int, user_id: int) -> Battle:
-    battle = db.query(Battle).filter(Battle.partycode == party_code).first()
-    print(battle.title)
+def add_user_to_battle(db: Session, partycode: int, user_id: int) -> Battle:
+    battle = db.query(Battle).filter(Battle.partycode == partycode).first()
     party = BattleParty(battle_id=battle.id, user_id=user_id)
     db.add(party)
     db.commit()
@@ -61,16 +60,21 @@ def add_user_to_battle(db: Session, party_code: int, user_id: int) -> Battle:
 
 
 def create_challenge(db: Session, challenge: ChallengeBase) -> Challenge:
-    battle = db.query(Battle).filter(Battle.partycode == challenge.party_code).first()
-    db_challenge = Challenge(challenge.model_dump() | {"battle_id": battle.id})
+    battle = db.query(Battle).filter_by(partycode=challenge.partycode).first()
+    if not battle:
+        raise ValueError("Battle with the given partycode does not exist.")
+    data = challenge.model_dump(exclude={"partycode", "rewards"}) | {
+        "battle_id": battle.id
+    }
+    db_challenge = Challenge(**data)
     db.add(db_challenge)
     db.commit()
     db.refresh(db_challenge)
     return db_challenge
 
 
-def create_reward(db: Session, reward: RewardBase) -> Reward:
-    db_reward = Reward(**reward.model_dump())
+def create_reward(db: Session, reward: RewardBase, challenge_id: int) -> Reward:
+    db_reward = Reward(**reward.model_dump() | {"challenge_id": challenge_id})
     db.add(db_reward)
     db.commit()
     db.refresh(db_reward)

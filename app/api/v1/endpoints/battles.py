@@ -1,4 +1,4 @@
-from typing import List
+from typing import Any, List
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 from app.db.database import get_db
@@ -61,24 +61,24 @@ def read_battle(battle_id: int, db: Session = Depends(get_db)):
     return db_battle
 
 
-@router.post("/join/{party_code}", response_model=Battle)
+@router.post("/join/{partycode}", response_model=Battle)
 def join_battle(
-    party_code: str,
+    partycode: str,
     user: User = Depends(get_current_user),
     db: Session = Depends(get_db),
 ):
-    return add_user_to_battle(db, party_code, user.id)
+    return add_user_to_battle(db, partycode, user.id)
 
 
-@router.post("/{party_code}/challenge", response_model=Challenge)
+@router.post("/challenge/create", response_model=Challenge)
 def create_challenge_endpoint(
-    party_code: str, challenge: ChallengeCreate, db: Session = Depends(get_db)
+    challenge: ChallengeCreate, db: Session = Depends(get_db)
 ):
     # battle_id is required in challenge
     # TODO combine creation process
     empty_challenge = create_challenge(db, challenge)
     for reward in challenge.rewards:
-        create_reward(db, reward)
+        create_reward(db, reward, empty_challenge.id)
     return get_challenge(db, empty_challenge.id)
 
 

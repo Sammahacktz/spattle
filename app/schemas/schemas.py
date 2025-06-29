@@ -162,7 +162,7 @@ class ChallengeBase(BaseModel):
     icon: Optional[str] = None
     value: float
     max_value: Optional[float] = None
-    partycode: str
+    partycode: str | None = None
     creator_id: int
     assigned_user_id: int
 
@@ -197,7 +197,6 @@ class RewardBase(BaseModel):
     description: Optional[str] = None
     target: Optional[float] = None
     challenge_id: int
-    user_id: Optional[int] = None
 
 
 class RewardCreate(RewardBase):

@@ -69,7 +69,7 @@ export const battlesAPI = {
         return response.data;
     },
     createChallenge: async (challenge: ChallengeCreate): Promise<Challenge> => {
-        const response = await api.post(`/battles/${challenge.partycode}/challenge/`, challenge);
+        const response = await api.post(`/battles/challenge/create/`, challenge);
         return response.data;
     },
     join: async (invite: string): Promise<Battle> => {
