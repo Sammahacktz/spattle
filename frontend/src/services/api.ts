@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { AuthToken, Battle, BattleCreate, LoginCredentials, User, UserCreate } from '../types';
+import { AuthToken, Battle, BattleCreate, Challenge, ChallengeCreate, LoginCredentials, User, UserCreate } from '../types';
 
 const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:8000';
 
@@ -66,6 +66,10 @@ export const battlesAPI = {
     },
     create: async (battle: BattleCreate): Promise<Battle> => {
         const response = await api.post('/battles/', battle);
+        return response.data;
+    },
+    createChallenge: async (challenge: ChallengeCreate): Promise<Challenge> => {
+        const response = await api.post(`/battles/${challenge.partycode}/challenge/`, challenge);
         return response.data;
     },
     join: async (invite: string): Promise<Battle> => {

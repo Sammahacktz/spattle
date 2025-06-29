@@ -23,6 +23,7 @@ from app.services.battle_service import (
     delete_battle,
     get_battles_where_user_is_member,
     get_battle_members,
+    get_challenge,
 )
 from app.services.auth_service import get_current_user
 
@@ -69,12 +70,16 @@ def join_battle(
     return add_user_to_battle(db, party_code, user.id)
 
 
-@router.post("/{battle_id}/challenge", response_model=Challenge)
+@router.post("/{party_code}/challenge", response_model=Challenge)
 def create_challenge_endpoint(
-    battle_id: int, challenge: ChallengeCreate, db: Session = Depends(get_db)
+    party_code: str, challenge: ChallengeCreate, db: Session = Depends(get_db)
 ):
     # battle_id is required in challenge
-    return create_challenge(db, challenge)
+    # TODO combine creation process
+    empty_challenge = create_challenge(db, challenge)
+    for reward in challenge.rewards:
+        create_reward(db, reward)
+    return get_challenge(db, empty_challenge.id)
 
 
 @router.post("/challenge/{challenge_id}/reward", response_model=Reward)

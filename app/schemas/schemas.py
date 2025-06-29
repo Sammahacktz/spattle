@@ -162,13 +162,13 @@ class ChallengeBase(BaseModel):
     icon: Optional[str] = None
     value: float
     max_value: Optional[float] = None
-    battle_id: int
+    partycode: str
     creator_id: int
     assigned_user_id: int
 
 
 class ChallengeCreate(ChallengeBase):
-    pass
+    rewards: list["RewardCreate"]
 
 
 class ChallengeSummary(ChallengeBase):

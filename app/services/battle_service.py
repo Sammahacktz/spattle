@@ -9,6 +9,10 @@ from app.schemas.schemas import (
 )
 
 
+def get_challenge(db: Session, challenge_id: int) -> Challenge:
+    return db.query(Challenge).filter(Challenge.id == challenge_id).first()
+
+
 def get_battle(db: Session, battle_id: int) -> Optional[Battle]:
     return db.query(Battle).filter(Battle.id == battle_id).first()
 
@@ -57,7 +61,8 @@ def add_user_to_battle(db: Session, party_code: int, user_id: int) -> Battle:
 
 
 def create_challenge(db: Session, challenge: ChallengeBase) -> Challenge:
-    db_challenge = Challenge(**challenge.model_dump())
+    battle = db.query(Battle).filter(Battle.partycode == challenge.party_code).first()
+    db_challenge = Challenge(challenge.model_dump() | {"battle_id": battle.id})
     db.add(db_challenge)
     db.commit()
     db.refresh(db_challenge)

@@ -16,17 +16,17 @@ import {
     Typography
 } from '@mui/material';
 import React, { useEffect, useState } from 'react';
-import { useLocation, useParams } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { battlesAPI } from '../services/api';
-import { ChallengeCreate, RewardCreate, User } from '../types';
+import { Challenge, ChallengeCreate, RewardCreate, User } from '../types';
 
 
 
 export const Party: React.FC = () => {
     const { user } = useAuth();
     const { partycode } = useParams<{ partycode: string }>();
-    const location = useLocation();
+    const [challenges, setChanllenges] = useState<Challenge[]>([])
     const [open, setOpen] = useState(false);
     const [users, setUsers] = useState<User[]>([user!]);
     const [error, setError] = useState('');
@@ -85,6 +85,33 @@ export const Party: React.FC = () => {
         });
     };
 
+    const handleChallengeCreate = async () => {
+        if (!user) {
+            setError('You must be logged in to create a battle.');
+            return;
+        }
+        try {
+            const newChallenge = await battlesAPI.createChallenge({ ...form, creator_id: user.id });
+            setChanllenges([newChallenge, ...challenges]);
+            setOpen(false);
+            setForm({
+                title: '',
+                description: '',
+                max_value: 100,
+                assigned_user_id: 0,
+                partycode: partycode!,
+                creator_id: user?.id || 0,
+                value: 0,
+                icon: '🏁',
+                rewards: [
+                    { title: '', description: '', target: 0, challenge_id: 0 }
+                ]
+            });
+        } catch (err: any) {
+            setError('Failed to create battle');
+        }
+
+    }
     const handleSliderChange = (_: any, value: number | number[]) => {
         setForm({ ...form, value: Array.isArray(value) ? value[0] : value });
     };
@@ -204,7 +231,7 @@ export const Party: React.FC = () => {
                     </DialogContent>
                     <DialogActions>
                         <Button onClick={() => setOpen(false)}>Abbrechen</Button>
-                        <Button variant="contained" color="primary">
+                        <Button onClick={handleChallengeCreate} variant="contained" color="primary">
                             Challenge erstellen
                         </Button>
                     </DialogActions>
