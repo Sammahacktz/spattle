@@ -9,8 +9,15 @@ from app.schemas.schemas import (
 )
 
 
-def get_all_challenges_for_battle(db: Session, partycode: str) -> list[Challenge]:
+def get_battle_with_partycode(db: Session, partycode) -> Battle:
     battle = db.query(Battle).filter(Battle.partycode == partycode).first()
+    if not battle:
+        raise Exception("No Battle found")
+    return battle
+
+
+def get_all_challenges_for_battle(db: Session, partycode: str) -> list[Challenge]:
+    battle = get_battle_with_partycode(db, partycode)
     if not battle:
         return []
     return db.query(Challenge).filter(Challenge.battle_id == battle.id).all()
@@ -58,7 +65,7 @@ def create_battle(db: Session, battle: BattleCreate) -> Battle:
 
 
 def add_user_to_battle(db: Session, partycode: int, user_id: int) -> Battle:
-    battle = db.query(Battle).filter(Battle.partycode == partycode).first()
+    battle = get_battle_with_partycode(db, partycode)
     party = BattleParty(battle_id=battle.id, user_id=user_id)
     db.add(party)
     db.commit()
@@ -67,7 +74,8 @@ def add_user_to_battle(db: Session, partycode: int, user_id: int) -> Battle:
 
 
 def create_challenge(db: Session, challenge: ChallengeBase) -> Challenge:
-    battle = db.query(Battle).filter_by(partycode=challenge.partycode).first()
+    battle = get_battle_with_partycode(db, challenge.partycode)
+
     if not battle:
         raise ValueError("Battle with the given partycode does not exist.")
     data = challenge.model_dump(exclude={"partycode", "rewards"}) | {
@@ -114,16 +122,18 @@ def delete_battle(db: Session, battle_id: int) -> bool:
     return True
 
 
-def get_battle_members(db: Session, battle_id: int) -> list[User]:
+def get_battle_members(db: Session, partycode: str) -> list[User]:
     # Get users who are members via BattleParty
+    battle = get_battle_with_partycode(db, partycode)
+
     members = (
         db.query(User)
         .join(BattleParty, BattleParty.user_id == User.id)
-        .filter(BattleParty.battle_id == battle_id)
+        .filter(BattleParty.id == battle.id)
         .all()
     )
     # Get the creator
-    battle = db.query(Battle).filter(Battle.id == battle_id).first()
+    battle = db.query(Battle).filter(Battle.partycode == partycode).first()
     if battle and battle.creator_id:
         creator = db.query(User).filter(User.id == battle.creator_id).first()
         if creator and creator not in members:

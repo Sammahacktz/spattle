@@ -49,15 +49,15 @@ export const Party: React.FC = () => {
 
     useEffect(() => {
         if (user) {
-            loadUserBattles(user.id);
+            loadUserBattles(partycode!);
             loadChallengesForBattle(partycode!);
         }
     }, [user]);
 
-    const loadUserBattles = async (userId: number) => {
+    const loadUserBattles = async (partycode: string) => {
         try {
             // Fetch battles where the user is a member (participant or creator)
-            const data = await battlesAPI.getBattleUsers(userId);
+            const data = await battlesAPI.getBattleUsers(partycode);
             setUsers(data);
         } catch (err: any) {
             setError('Failed to load battles');

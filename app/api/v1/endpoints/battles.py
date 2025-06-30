@@ -36,11 +36,11 @@ def create_battle_endpoint(battle: BattleCreate, db: Session = Depends(get_db)):
     return create_battle(db=db, battle=battle)
 
 
-@router.get("/{battle_id}/members/", response_model=List[UserSummary])
+@router.get("/{partycode}/members/", response_model=List[UserSummary])
 def list_battle_members(
-    battle_id: int, skip: int = 0, limit: int = 100, db: Session = Depends(get_db)
+    partycode: str, skip: int = 0, limit: int = 100, db: Session = Depends(get_db)
 ):
-    return get_battle_members(db, battle_id)
+    return get_battle_members(db, partycode)
 
 
 @router.get("/user/{user_id}", response_model=List[Battle])
