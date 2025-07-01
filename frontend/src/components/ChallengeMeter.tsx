@@ -51,6 +51,10 @@ export const CustomProgressBar: React.FC<CustomProgressBarProps> = ({ value, max
         description: detailed ? r.description : undefined
     }));
     const progressPercent = max > 0 ? (value / max) * 100 : 0;
+    const [animatedPercent, setAnimatedPercent] = React.useState(progressPercent);
+    React.useEffect(() => {
+        setAnimatedPercent(progressPercent);
+    }, [progressPercent]);
     return (
         <Box sx={{ position: 'relative', width: '100%', height: 80, px: 2 }}>
             {/* Only render top marks if not detailed */}
@@ -64,15 +68,25 @@ export const CustomProgressBar: React.FC<CustomProgressBarProps> = ({ value, max
                 </Box>
             )}
             <Box sx={{ position: 'absolute', left: 0, right: 0, top: 32, height: 8, bgcolor: '#ddd', borderRadius: 4 }}>
-                <Box sx={{ position: 'absolute', left: 0, width: `${progressPercent}%`, top: 0, height: 8, bgcolor: 'primary.main', borderRadius: 4 }} />
                 <Box sx={{
                     position: 'absolute',
-                    left: `${progressPercent}%`,
+                    left: 0,
+                    width: `${animatedPercent}%`,
+                    top: 0,
+                    height: 8,
+                    bgcolor: 'primary.main',
+                    borderRadius: 4,
+                    transition: 'width 1s cubic-bezier(0.4, 0, 0.2, 1)',
+                }} />
+                <Box sx={{
+                    position: 'absolute',
+                    left: `${animatedPercent}%`,
                     top: '-15px',
                     transform: 'translate(-50%, 0)',
                     zIndex: 4,
                     fontSize: 25,
                     pointerEvents: 'none',
+                    transition: 'left 1s cubic-bezier(0.4, 0, 0.2, 1)',
                 }}>
                     🏃‍➡️
                 </Box>

@@ -24,7 +24,7 @@ export const ChallengeCard: React.FC<ChallengeProps> = ({ challenge }) => {
         if (expandedChallenge === challenge.id && navigator.geolocation) {
             navigator.geolocation.getCurrentPosition(
                 (pos) => setPosition([pos.coords.latitude, pos.coords.longitude]),
-                () => setPosition([51.505, -0.09]) // fallback to London
+                () => setPosition([51.505, -0.09])
             );
         }
     }, [expandedChallenge, challenge.id]);
@@ -102,7 +102,7 @@ export const ChallengeCard: React.FC<ChallengeProps> = ({ challenge }) => {
                     <Typography variant="body1">
                         Challenger: {challenge.assigned_user?.username ?? "Unknown"}
                     </Typography>
-                    <Box mt={1}>
+                    <Box mt={1} mx={3}>
                         <CustomProgressBar
                             value={challenge.value}
                             max={challenge.max_value!}
@@ -116,17 +116,45 @@ export const ChallengeCard: React.FC<ChallengeProps> = ({ challenge }) => {
                         </Typography>
                     </Box>
 
-                    <Box sx={{ display: 'flex', alignItems: 'center' }} gap={2}>
-                        <Card sx={{ minWidth: '50%', height: "auto" }}>
+                    <Box sx={{ display: 'flex', alignItems: 'stretch', height: "100%", gap: 2 }}>
+                        <Card sx={{ width: '50%', height: '100%', mt: 2 }}>
                             <Typography variant="h6" gutterBottom>
                                 Verdiente Belohnungen:
                             </Typography>
+                            <Box sx={{ width: '100%', minHeight: '100%', mt: 2, maxHeight: 300, overflowY: 'auto' }}>
+                                {challenge.rewards && challenge.rewards.length > 0 ? (
+                                    <Stack spacing={2}>
+                                        {challenge.rewards.map((reward, idx) => (
+                                            <Card key={idx} sx={{ display: 'flex', alignItems: 'stretch', p: 1 }}>
+                                                <Box sx={{ flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
+                                                    <Typography variant="body1">{reward.title}</Typography>
+                                                    <Typography variant="body2" color="text.secondary">{reward.description}</Typography>
+                                                </Box>
+                                                <Box sx={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                                                    <Typography variant="body2" color="text.secondary">{`noch ${reward.target! - challenge.value} KM bis zur Belohnung!`}</Typography>
+                                                </Box>
+                                                <Box sx={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                                                    {reward.target! < challenge.value ? (
+                                                        <span>✓</span>
+                                                    ) : (
+                                                        <span>✗</span>
+                                                    )}
+                                                </Box>
+                                            </Card>
+                                        ))}
+                                    </Stack>
+                                ) : (
+                                    <Typography variant="body2" color="text.secondary">
+                                        Keine Belohnungen vorhanden.
+                                    </Typography>
+                                )}
+                            </Box>
                         </Card>
-                        <Card sx={{ minWidth: '49%', height: "auto" }}>
+                        <Card sx={{ minWidth: '49%', height: '100%' }}>
                             <Typography variant="h6" gutterBottom>
                                 Aktivität:
                             </Typography>
-                            <Box sx={{ width: '100%', height: 250, mt: 2 }}>
+                            <Box sx={{ width: '100%', height: '100%', mt: 2 }}>
                                 {position && (
                                     <SimpleMap position={position}></SimpleMap>
                                 )}
@@ -134,7 +162,7 @@ export const ChallengeCard: React.FC<ChallengeProps> = ({ challenge }) => {
                         </Card>
                     </Box>
                 </>)}
-            </Box>
+            </Box >
         </>
     )
 

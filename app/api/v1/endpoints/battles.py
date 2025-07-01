@@ -1,6 +1,8 @@
 from typing import Any, List
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, Response, status
 from sqlalchemy.orm import Session
+from pydantic import BaseModel
+
 from app.db.database import get_db
 from app.models.models import User
 from app.schemas.schemas import (
@@ -25,10 +27,15 @@ from app.services.battle_service import (
     get_battles_where_user_is_member,
     get_battle_members,
     get_challenge,
+    update_value_for_all_challenges_on_user,
 )
 from app.services.auth_service import get_current_user
 
 router = APIRouter()
+
+
+class DistanceUpdateRequest(BaseModel):
+    distance: float
 
 
 @router.post("/", response_model=Battle, status_code=status.HTTP_201_CREATED)
@@ -86,6 +93,16 @@ def create_challenge_endpoint(
 @router.get("/{partycode}/challenges/", response_model=list[Challenge])
 def create_challenge_endpoint(partycode: str, db: Session = Depends(get_db)):
     return get_all_challenges_for_battle(db, partycode)
+
+
+@router.post("/distance/", status_code=204)
+def update_user_challenge_distance(
+    req: DistanceUpdateRequest,
+    user: User = Depends(get_current_user),
+    db: Session = Depends(get_db),
+):
+    update_value_for_all_challenges_on_user(db, user.id, req.distance)
+    return Response(status_code=204)
 
 
 # @router.post("/challenge/{challenge_id}/reward", response_model=Reward)

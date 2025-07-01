@@ -34,7 +34,7 @@ const Register: React.FC = () => {
         setError('');
 
         if (formData.password !== formData.confirmPassword) {
-            setError('Passwörter stimmen nicht überein');
+            setError('Passwörter stimmen nicht überein!');
             return;
         }
 
@@ -81,7 +81,7 @@ const Register: React.FC = () => {
                             required
                             fullWidth
                             id="username"
-                            label="Username"
+                            label="Nutzername"
                             name="username"
                             autoComplete="username"
                             autoFocus
@@ -93,7 +93,7 @@ const Register: React.FC = () => {
                             required
                             fullWidth
                             id="email"
-                            label="Email Address"
+                            label="Email Addresse"
                             name="email"
                             autoComplete="email"
                             value={formData.email}
@@ -104,7 +104,7 @@ const Register: React.FC = () => {
                             required
                             fullWidth
                             name="password"
-                            label="Password"
+                            label="Passwort"
                             type="password"
                             id="password"
                             autoComplete="new-password"
@@ -129,7 +129,7 @@ const Register: React.FC = () => {
                             sx={{ mt: 3, mb: 2 }}
                             disabled={isLoading}
                         >
-                            {isLoading ? 'Creating Account...' : 'Anmelden'}
+                            {isLoading ? 'Account wird erstellt ...' : 'Anmelden'}
                         </Button>
                         <Box textAlign="center">
                             <Link to="/login">

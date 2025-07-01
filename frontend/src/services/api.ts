@@ -90,8 +90,8 @@ export const battlesAPI = {
         return response.data;
     },
 
-    update: async (id: number, battle: Partial<BattleCreate>): Promise<Battle> => {
-        const response = await api.put(`/battles/${id}`, battle);
+    updateUsersDistance: async (distance: number): Promise<boolean> => {
+        const response = await api.post(`/battles/distance/`, { "distance": distance });
         return response.data;
     },
 

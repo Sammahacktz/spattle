@@ -9,6 +9,22 @@ from app.schemas.schemas import (
 )
 
 
+def update_value_for_all_challenges_on_user(
+    db: Session, user_id: int, distance: float
+) -> bool:
+    """
+    Add the given distance to the value of all challenges assigned to the user.
+    """
+    challenges = db.query(Challenge).filter(Challenge.assigned_user_id == user_id).all()
+    if not challenges:
+        return True
+    for challenge in challenges:
+        challenge.value = (challenge.value or 0) + distance
+        db.add(challenge)
+    db.commit()
+    return True
+
+
 def get_battle_with_partycode(db: Session, partycode) -> Battle:
     battle = db.query(Battle).filter(Battle.partycode == partycode).first()
     if not battle:
