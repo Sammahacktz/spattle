@@ -17,6 +17,7 @@ import { BattleGrid } from '../components/BattleGrid';
 import { useAuth } from '../contexts/AuthContext';
 import { battlesAPI } from '../services/api';
 import { Battle, BattleCreate } from '../types';
+
 const Battles: React.FC = () => {
     const { isAuthenticated, user } = useAuth();
     const [battles, setBattles] = useState<Battle[]>([]);
