@@ -141,17 +141,14 @@ def delete_battle(db: Session, battle_id: int) -> bool:
 def get_battle_members(db: Session, partycode: str) -> list[User]:
     # Get users who are members via BattleParty
     battle = get_battle_with_partycode(db, partycode)
-
-    members = (
-        db.query(User)
-        .join(BattleParty, BattleParty.user_id == User.id)
-        .filter(BattleParty.id == battle.id)
-        .all()
+    if not battle:
+        return []
+    # Get all users in the party (BattleParty)
+    party_members = (
+        db.query(BattleParty).filter(BattleParty.battle_id == battle.id).all()
     )
-    # Get the creator
-    battle = db.query(Battle).filter(Battle.partycode == partycode).first()
-    if battle and battle.creator_id:
-        creator = db.query(User).filter(User.id == battle.creator_id).first()
-        if creator and creator not in members:
-            members.append(creator)
-    return members
+    users = [pm.user for pm in party_members if pm.user is not None]
+    # Also include the creator if not already in the party
+    if battle.creator and all(u.id != battle.creator.id for u in users):
+        users.append(battle.creator)
+    return users

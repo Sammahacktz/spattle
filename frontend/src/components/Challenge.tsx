@@ -121,7 +121,7 @@ export const ChallengeCard: React.FC<ChallengeProps> = ({ challenge }) => {
                             <Typography variant="h6" gutterBottom>
                                 Verdiente Belohnungen:
                             </Typography>
-                            <Box sx={{ width: '100%', minHeight: '100%', mt: 2, maxHeight: 300, overflowY: 'auto' }}>
+                            <Box sx={{ width: '100%', minHeight: '50%', mt: 2, maxHeight: 300, overflowY: 'scroll' }}>
                                 {challenge.rewards && challenge.rewards.length > 0 ? (
                                     <Stack spacing={2}>
                                         {challenge.rewards.map((reward, idx) => (
@@ -150,7 +150,7 @@ export const ChallengeCard: React.FC<ChallengeProps> = ({ challenge }) => {
                                 )}
                             </Box>
                         </Card>
-                        <Card sx={{ minWidth: '49%', height: '100%' }}>
+                        <Card sx={{ minWidth: '49%', height: '90%' }}>
                             <Typography variant="h6" gutterBottom>
                                 Aktivität:
                             </Typography>

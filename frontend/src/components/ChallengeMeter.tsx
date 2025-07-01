@@ -33,12 +33,12 @@ const MarkLabel: React.FC<MarkLabelProps> = ({ label, percent, position, descrip
             alignItems: 'center',
         }}
     >
-        {description ? (
+        {description && (
             <details>
                 <summary>{label}</summary>
                 <Typography variant="caption" fontWeight={400}>{description}</Typography>
             </details>
-        ) : (<Typography variant="caption" fontWeight={600}>{label}</Typography>
+
         )}
     </Box>
 );
@@ -62,7 +62,7 @@ export const CustomProgressBar: React.FC<CustomProgressBarProps> = ({ value, max
                 <Box sx={{ position: 'absolute', left: 0, right: 0, top: 0, height: 24, pointerEvents: 'none' }}>
                     {marks.map((mark, i) => (
                         i % 2 === 0 ? (
-                            <MarkLabel key={i} label={mark.label} percent={mark.percent} position="top" description={mark.description} />
+                            <MarkLabel label={mark.label} key={i} percent={mark.percent} position="top" description={mark.description} />
                         ) : null
                     ))}
                 </Box>

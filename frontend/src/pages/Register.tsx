@@ -129,7 +129,7 @@ const Register: React.FC = () => {
                             sx={{ mt: 3, mb: 2 }}
                             disabled={isLoading}
                         >
-                            {isLoading ? 'Account wird erstellt ...' : 'Anmelden'}
+                            {isLoading ? 'Account wird erstellt ...' : 'Regestrieren'}
                         </Button>
                         <Box textAlign="center">
                             <Link to="/login">
