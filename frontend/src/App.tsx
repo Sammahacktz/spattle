@@ -1,4 +1,5 @@
 import { Container } from '@mui/material';
+import 'leaflet/dist/leaflet.css';
 import { Route, BrowserRouter as Router, Routes } from 'react-router-dom';
 import Navbar from './components/Navbar';
 import { AuthProvider } from './contexts/AuthContext';
@@ -8,6 +9,7 @@ import Login from './pages/Login';
 import Party from './pages/Party';
 import Register from './pages/Register';
 import './styles/global.scss';
+
 
 
 function App() {

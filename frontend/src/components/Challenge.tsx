@@ -2,20 +2,32 @@ import CloseIcon from '@mui/icons-material/Close';
 import {
     Avatar,
     Box,
+    Card,
     Chip,
     IconButton,
     Stack,
     Typography
 } from '@mui/material';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Challenge } from '../types';
 import { CustomProgressBar } from './ChallengeMeter';
+import { SimpleMap } from './Map';
 
 interface ChallengeProps {
     challenge: Challenge;
 }
 export const ChallengeCard: React.FC<ChallengeProps> = ({ challenge }) => {
     const [expandedChallenge, setExpandedChallenge] = useState<number | null>(null);
+    const [position, setPosition] = useState<[number, number]>([51.505, -0.09]);
+
+    useEffect(() => {
+        if (expandedChallenge === challenge.id && navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(
+                (pos) => setPosition([pos.coords.latitude, pos.coords.longitude]),
+                () => setPosition([51.505, -0.09]) // fallback to London
+            );
+        }
+    }, [expandedChallenge, challenge.id]);
 
     return (
         <>
@@ -102,6 +114,24 @@ export const ChallengeCard: React.FC<ChallengeProps> = ({ challenge }) => {
                         <Typography variant="caption" color="text.secondary">
                             {challenge.start_datetime} - {challenge.end_datetime}
                         </Typography>
+                    </Box>
+
+                    <Box sx={{ display: 'flex', alignItems: 'center' }} gap={2}>
+                        <Card sx={{ minWidth: '50%', height: "auto" }}>
+                            <Typography variant="h6" gutterBottom>
+                                Verdiente Belohnungen:
+                            </Typography>
+                        </Card>
+                        <Card sx={{ minWidth: '49%', height: "auto" }}>
+                            <Typography variant="h6" gutterBottom>
+                                Aktivität:
+                            </Typography>
+                            <Box sx={{ width: '100%', height: 250, mt: 2 }}>
+                                {position && (
+                                    <SimpleMap position={position}></SimpleMap>
+                                )}
+                            </Box>
+                        </Card>
                     </Box>
                 </>)}
             </Box>

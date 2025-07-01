@@ -154,10 +154,10 @@ export const Party: React.FC = () => {
                     }}
                 >
                     <strong>Partymitglieder:</strong>
-                    {users.map((u) => (
+                    {users.filter(u => u && u.username).map((u) => (
                         <Box key={u.id} sx={{ bgcolor: '#fff', color: '#000', borderRadius: 2, boxShadow: 1, p: 1, minWidth: 180 }}>
                             <Typography variant="subtitle1" fontWeight={600}>
-                                {u.username.charAt(0).toUpperCase() + u.username.slice(1)}
+                                {(u.username ? u.username.charAt(0).toUpperCase() + u.username.slice(1) : 'Unbekannt')}
                             </Typography>
                             <Rating name="half-rating-read" defaultValue={0} precision={0.5} readOnly />
                         </Box>
@@ -213,9 +213,9 @@ export const Party: React.FC = () => {
                                 slotProps={{ inputLabel: { shrink: true } }}
                             />
                             <Autocomplete
-                                options={users}
+                                options={users.filter(u => u && typeof u.id === 'number' && u.username)}
                                 getOptionLabel={(option) => option.username}
-                                value={users.find(u => u.id === form.assigned_user_id) || null}
+                                value={users.filter(u => u && typeof u.id === 'number' && u.username).find(u => u.id === form.assigned_user_id) || null}
                                 onChange={(_, value) => setForm({ ...form, assigned_user_id: value ? value.id : 0 })}
                                 loading={users.length === 0}
                                 renderInput={(params) => (

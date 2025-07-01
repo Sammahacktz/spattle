@@ -122,7 +122,9 @@ const Battles: React.FC = () => {
                         </>
                     )}
                     <BattleGrid
-                        battles={battles.filter((battle) => battle.creator_id === user?.id)}
+                        battles={battles.filter(
+                            (battle) => battle && battle.creator_id === user?.id && battle.title && battle.partycode
+                        )}
                         isAuthenticated={isAuthenticated}
                         error={error}
                     />
@@ -141,7 +143,9 @@ const Battles: React.FC = () => {
                         </>
                     )}
                     <BattleGrid
-                        battles={battles.filter((battle) => battle.creator_id !== user?.id)}
+                        battles={battles.filter(
+                            (battle) => battle && battle.creator_id !== user?.id && battle.title && battle.partycode
+                        )}
                         isAuthenticated={isAuthenticated}
                         error={error}
                     />
