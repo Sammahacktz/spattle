@@ -7,6 +7,7 @@ import Home from './pages/Home';
 import Login from './pages/Login';
 import Party from './pages/Party';
 import Register from './pages/Register';
+import './styles/global.scss';
 
 
 function App() {

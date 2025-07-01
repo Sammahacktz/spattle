@@ -5,20 +5,22 @@ import {
 import React from 'react';
 
 
-type RewardMark = { title: string; target?: number };
+type RewardMark = { title: string; target?: number, description?: string | undefined };
 interface CustomProgressBarProps {
     value: number;
     max: number;
     rewards: RewardMark[];
+    detailed?: boolean;
 }
 
 interface MarkLabelProps {
     label: string;
+    description: string | undefined;
     percent: number;
     position: 'top' | 'bottom';
 }
 
-const MarkLabel: React.FC<MarkLabelProps> = ({ label, percent, position }) => (
+const MarkLabel: React.FC<MarkLabelProps> = ({ label, percent, position, description }) => (
     <Box
         sx={{
             position: 'absolute',
@@ -26,28 +28,41 @@ const MarkLabel: React.FC<MarkLabelProps> = ({ label, percent, position }) => (
             transform: 'translateX(-50%)',
             textAlign: 'center',
             top: position === 'top' ? 0 : undefined,
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
         }}
     >
-        <Typography variant="caption" fontWeight={600}>{label}</Typography>
+        {description ? (
+            <details>
+                <summary>{label}</summary>
+                <Typography variant="caption" fontWeight={400}>{description}</Typography>
+            </details>
+        ) : (<Typography variant="caption" fontWeight={600}>{label}</Typography>
+        )}
     </Box>
 );
 
-export const CustomProgressBar: React.FC<CustomProgressBarProps> = ({ value, max, rewards }) => {
+export const CustomProgressBar: React.FC<CustomProgressBarProps> = ({ value, max, rewards, detailed = false }) => {
     const marks = rewards.map((r, i) => ({
         value: r.target,
         label: r.title || `Belohnung ${i + 1}`,
-        percent: max > 0 ? (r.target! / max) * 100 : 0
+        percent: max > 0 ? (r.target! / max) * 100 : 0,
+        description: detailed ? r.description : undefined
     }));
     const progressPercent = max > 0 ? (value / max) * 100 : 0;
     return (
         <Box sx={{ position: 'relative', width: '100%', height: 80, px: 2 }}>
-            <Box sx={{ position: 'absolute', left: 0, right: 0, top: 0, height: 24, pointerEvents: 'none' }}>
-                {marks.map((mark, i) => (
-                    i % 2 === 0 ? (
-                        <MarkLabel key={i} label={mark.label} percent={mark.percent} position="top" />
-                    ) : null
-                ))}
-            </Box>
+            {/* Only render top marks if not detailed */}
+            {!detailed && (
+                <Box sx={{ position: 'absolute', left: 0, right: 0, top: 0, height: 24, pointerEvents: 'none' }}>
+                    {marks.map((mark, i) => (
+                        i % 2 === 0 ? (
+                            <MarkLabel key={i} label={mark.label} percent={mark.percent} position="top" description={mark.description} />
+                        ) : null
+                    ))}
+                </Box>
+            )}
             <Box sx={{ position: 'absolute', left: 0, right: 0, top: 32, height: 8, bgcolor: '#ddd', borderRadius: 4 }}>
                 <Box sx={{ position: 'absolute', left: 0, width: `${progressPercent}%`, top: 0, height: 8, bgcolor: 'primary.main', borderRadius: 4 }} />
                 <Box sx={{
@@ -67,13 +82,21 @@ export const CustomProgressBar: React.FC<CustomProgressBarProps> = ({ value, max
                     </Box>
                 ))}
             </Box>
-            <Box sx={{ position: 'absolute', left: 0, right: 0, top: 56, height: 24, pointerEvents: 'none' }}>
-                {marks.map((mark, i) => (
-                    i % 2 === 1 ? (
-                        <MarkLabel key={i} label={mark.label} percent={mark.percent} position="bottom" />
-                    ) : null
-                ))}
-            </Box>
+            {detailed ? (
+                <Box sx={{ position: 'absolute', left: 0, right: 0, top: 56, height: 24 }}>
+                    {marks.map((mark, i) => (
+                        <MarkLabel key={i} label={mark.label} percent={mark.percent} position="bottom" description={mark.description} />
+                    ))}
+                </Box>
+            ) : (
+                <Box sx={{ position: 'absolute', left: 0, right: 0, top: 56, height: 24, pointerEvents: 'none' }}>
+                    {marks.map((mark, i) => (
+                        i % 2 === 1 ? (
+                            <MarkLabel key={i} label={mark.label} percent={mark.percent} position="bottom" description={mark.description} />
+                        ) : null
+                    ))}
+                </Box>
+            )}
         </Box>
     );
 };

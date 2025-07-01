@@ -1,0 +1,80 @@
+@import "_variables";
+
+body {
+    font-family: 'Roboto', sans-serif;
+    background: $secondary-color;
+    color: #222;
+}
+
+
+
+.App {
+    text-align: center;
+}
+
+.App-logo {
+    height: 40vmin;
+    pointer-events: none;
+}
+
+.App-header {
+    background-color: #282c34;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    font-size: calc(10px + 2vmin);
+    color: white;
+}
+
+.App-link {
+    color: #32ff77;
+}
+
+.MuiDrawer-root.MuiDrawer-root.MuiDrawer-root.side-navbar {
+    .MuiPaper-root {
+        width: 17rem;
+        background: $secondary-color;
+        border-right: 1px solid $primary-color;
+        position: fixed;
+        z-index: 19;
+        overflow: visible;
+    }
+
+    .side-navbar-trigger {
+        position: absolute;
+        visibility: visible;
+        top: 36vh;
+        right: -2rem;
+        width: 2rem;
+        height: 11rem;
+        background-color: $secondary-color;
+        border: 1px solid $primary-color;
+        border-left: none;
+        border-radius: 0 5px 5px 0;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        cursor: pointer;
+        z-index: 20;
+    }
+
+    .side-navbar-content {
+        padding: 1rem;
+    }
+}
+
+.service-list-group a {
+    background-color: $secondary-color;
+    color: $primary-color;
+}
+
+.arrow-animation {
+    transition: transform 250ms ease;
+    font-size: 2rem;
+
+    &.rotated {
+        transform: rotate(180deg);
+    }
+}

@@ -11,12 +11,15 @@ import {
     DialogContent,
     DialogTitle,
     IconButton,
+    Rating,
     TextField,
     Typography
 } from '@mui/material';
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
+import { ChallengeCard } from '../components/Challenge';
 import { CustomProgressBar } from '../components/ChallengeMeter';
+import { SideNavbar } from '../components/sideNavbar';
 import { useAuth } from '../contexts/AuthContext';
 import { battlesAPI } from '../services/api';
 import { Challenge, ChallengeCreate, RewardCreate, User } from '../types';
@@ -105,7 +108,6 @@ export const Party: React.FC = () => {
             return;
         }
         try {
-            console.log(partycode)
             const newChallenge = await battlesAPI.createChallenge({ ...form, creator_id: user.id, partycode: partycode! });
             setChanllenges([newChallenge, ...challenges]);
             setOpen(false);
@@ -130,14 +132,40 @@ export const Party: React.FC = () => {
 
     return (
         <Container maxWidth="lg" className='home-video'>
-            <h1 className="text-primary">rwar</h1>
+            <h1 className="text-primary">Challenges:</h1>
             {error && (
                 <Alert severity="error" sx={{ mb: 2 }}>
                     {error}
                 </Alert>
             )}
 
+            <SideNavbar>
+                <Box
+                    display="flex"
+                    flexDirection="column"
+                    gap={2}
+                    p={2}
+                    sx={{
+                        bgcolor: (theme) => theme.palette.primary.main,
+                        color: '#fff',
+                        borderRadius: 2,
+                        boxShadow: 1,
+                        minWidth: 180
+                    }}
+                >
+                    <strong>Partymitglieder:</strong>
+                    {users.map((u) => (
+                        <Box key={u.id} sx={{ bgcolor: '#fff', color: '#000', borderRadius: 2, boxShadow: 1, p: 1, minWidth: 180 }}>
+                            <Typography variant="subtitle1" fontWeight={600}>
+                                {u.username.charAt(0).toUpperCase() + u.username.slice(1)}
+                            </Typography>
+                            <Rating name="half-rating-read" defaultValue={0} precision={0.5} readOnly />
+                        </Box>
+                    ))}
+                </Box>
+            </SideNavbar>
             <Box>
+
                 <Button variant="contained" onClick={() => setOpen(true)}>
                     Challenge erstellen
                 </Button>
@@ -261,44 +289,13 @@ export const Party: React.FC = () => {
                     </DialogActions>
                 </Dialog>
             </Box>
-            <Box display="flex" flexWrap="wrap" gap={2} mt={3}>
+            <Box display="flex"
+                flexWrap="wrap"
+                gap={2}
+                mt={3}
+            >
                 {challenges.map((challenge) => (
-                    <Box
-                        key={challenge.id}
-                        sx={{
-                            border: '1px solid #ddd',
-                            borderRadius: 2,
-                            p: 2,
-                            minWidth: 300,
-                            boxShadow: 1,
-                            background: '#fff',
-                        }}
-                    >
-                        <Typography variant="h6" gutterBottom>
-                            {challenge.title}
-                        </Typography>
-                        <Typography variant="body2" color="text.secondary" gutterBottom>
-                            {challenge.description}
-                        </Typography>
-                        <Typography variant="body2">
-                            Max: {challenge.max_value} km
-                        </Typography>
-                        <Typography variant="body2">
-                            Fortschritt: {challenge.value} / {challenge.max_value} km
-                        </Typography>
-                        <Box mt={1}>
-                            <CustomProgressBar
-                                value={challenge.value}
-                                max={challenge.max_value!}
-                                rewards={challenge.rewards!}
-                            />
-                        </Box>
-                        <Box mt={1}>
-                            <Typography variant="caption" color="text.secondary">
-                                {challenge.start_datetime} - {challenge.end_datetime}
-                            </Typography>
-                        </Box>
-                    </Box>
+                    <ChallengeCard challenge={challenge} />
                 ))}
             </Box>
         </Container>
