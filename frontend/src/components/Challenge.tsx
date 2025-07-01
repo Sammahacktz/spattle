@@ -55,7 +55,7 @@ export const ChallengeCard: React.FC<ChallengeProps> = ({ challenge }) => {
                     <Typography variant="h6" gutterBottom>
                         {challenge.title}
                     </Typography>
-                    <Typography variant="body2" color="text.secondary" gutterBottom>
+                    <Typography variant="body2" color="text.secondary" gutterBottom component="div">
                         <Stack direction="row" spacing={1}>
                             <Chip color="primary" avatar={<Avatar>{challenge.assigned_user?.username[0].toUpperCase() ?? "U"}</Avatar>} label={challenge.assigned_user?.username ?? "unknown"} />
                         </Stack>

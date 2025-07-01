@@ -50,7 +50,7 @@ export const BattleGrid: React.FC<BattleGridProps> = ({ battles, isAuthenticated
                                     {battle.description || 'No description available'}
                                 </Typography>
 
-                                <Typography variant="body2" color="text.secondary">
+                                <Typography variant="body2" color="text.secondary" component="div">
                                     <FormControl variant="standard" fullWidth sx={{ mt: 1, maxWidth: 200 }}>
                                         <InputLabel htmlFor={`partycode_hidden_${battle.id}`}>Partycode</InputLabel>
                                         <Input

@@ -295,7 +295,7 @@ export const Party: React.FC = () => {
                 mt={3}
             >
                 {challenges.map((challenge) => (
-                    <ChallengeCard challenge={challenge} />
+                    <ChallengeCard key={challenge.id} challenge={challenge} />
                 ))}
             </Box>
         </Container>
