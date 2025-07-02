@@ -36,7 +36,7 @@ export const Party: React.FC = () => {
     const [open, setOpen] = useState(false);
     const [users, setUsers] = useState<User[]>([user!]);
     const [error, setError] = useState('');
-    const [distance, SetDistance] = useState<string>("0");
+    const [distance, SetDistance] = useState<string>("");
 
 
 
@@ -85,7 +85,7 @@ export const Party: React.FC = () => {
 
     const updateUsersDistance = async (distance: number) => {
         try {
-            SetDistance("0")
+            SetDistance("")
             await battlesAPI.updateUsersDistance(distance);
             await loadChallengesForBattle(partycode!);
 
@@ -149,7 +149,6 @@ export const Party: React.FC = () => {
 
     return (
         <Container maxWidth="lg" className='home-video'>
-            <h1 className="text-primary">Challenges:</h1>
             {error && (
                 <Alert severity="error" sx={{ mb: 2 }}>
                     {error}
@@ -181,7 +180,7 @@ export const Party: React.FC = () => {
                     ))}
                 </Box>
             </SideNavbar>
-            <Box display="flex" alignItems="stretch" gap={2} mb={2}>
+            <Box display="flex" justifyContent="center" sx={{ position: "relative", zIndex: 99, }} alignItems="stretch" gap={2} mb={2}>
                 <Input
                     value={distance}
                     id="standard-adornment-weight"
@@ -205,6 +204,7 @@ export const Party: React.FC = () => {
                     UPDATE!
                 </Button>
             </Box>
+            <h1 className="text-primary">Challenges:</h1>
             <Dialog open={open} onClose={() => setOpen(false)} maxWidth="md" fullWidth>
                 <DialogTitle>Neue Challenge erstellen</DialogTitle>
                 <DialogContent>

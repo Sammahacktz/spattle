@@ -1,4 +1,6 @@
+import AccessTimeIcon from '@mui/icons-material/AccessTime';
 import CloseIcon from '@mui/icons-material/Close';
+import DoneIcon from '@mui/icons-material/Done';
 import {
     Avatar,
     Box,
@@ -12,14 +14,12 @@ import React, { useEffect, useState } from 'react';
 import { Challenge } from '../types';
 import { CustomProgressBar } from './ChallengeMeter';
 import { SimpleMap } from './Map';
-
 interface ChallengeProps {
     challenge: Challenge;
 }
 export const ChallengeCard: React.FC<ChallengeProps> = ({ challenge }) => {
     const [expandedChallenge, setExpandedChallenge] = useState<number | null>(null);
     const [position, setPosition] = useState<[number, number]>([51.505, -0.09]);
-
     useEffect(() => {
         if (expandedChallenge === challenge.id && navigator.geolocation) {
             navigator.geolocation.getCurrentPosition(
@@ -33,7 +33,7 @@ export const ChallengeCard: React.FC<ChallengeProps> = ({ challenge }) => {
         <>
             <Box
                 key={challenge.id}
-                onClick={() => setExpandedChallenge(challenge.id)}
+                onClick={expandedChallenge !== challenge.id ? () => setExpandedChallenge(challenge.id) : undefined}
                 sx={{
                     border: '1px solid #ddd',
                     borderRadius: 2,
@@ -44,7 +44,7 @@ export const ChallengeCard: React.FC<ChallengeProps> = ({ challenge }) => {
                     width: expandedChallenge === challenge.id ? '95vw' : 300,
                     height: expandedChallenge === challenge.id ? '95vh' : 'auto',
                     transition: 'width 0.3s, height 0.3s',
-                    cursor: 'pointer',
+                    cursor: expandedChallenge !== challenge.id ? 'pointer' : 'default',
                     zIndex: expandedChallenge === challenge.id ? 10 : 1,
                     position: expandedChallenge === challenge.id ? 'fixed' : 'relative',
                     top: expandedChallenge === challenge.id ? '5rem' : 'auto',
@@ -124,21 +124,26 @@ export const ChallengeCard: React.FC<ChallengeProps> = ({ challenge }) => {
                             <Box sx={{ width: '100%', minHeight: '50%', mt: 2, maxHeight: 300, overflowY: 'scroll' }}>
                                 {challenge.rewards && challenge.rewards.length > 0 ? (
                                     <Stack spacing={2}>
-                                        {challenge.rewards.map((reward, idx) => (
+                                        {challenge.rewards.sort((a, b) => a.target! - b.target!).map((reward, idx) => (
                                             <Card key={idx} sx={{ display: 'flex', alignItems: 'stretch', p: 1 }}>
                                                 <Box sx={{ flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
                                                     <Typography variant="body1">{reward.title}</Typography>
                                                     <Typography variant="body2" color="text.secondary">{reward.description}</Typography>
                                                 </Box>
                                                 <Box sx={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                                                    <Typography variant="body2" color="text.secondary">{`noch ${reward.target! - challenge.value} KM bis zur Belohnung!`}</Typography>
+                                                    {reward.target! - challenge.value <= 0 ?
+                                                        (<Typography variant="body2" color="green">Belohnung erreicht!</Typography>)
+                                                        :
+                                                        (<Typography variant="body2" color="text.secondary">
+                                                            {`noch ${(reward.target! - challenge.value).toLocaleString('de-DE', { maximumFractionDigits: 1 })} KM bis zur Belohnung!`}
+                                                        </Typography>)
+                                                    }
                                                 </Box>
                                                 <Box sx={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                                                    {reward.target! < challenge.value ? (
-                                                        <span>✓</span>
+                                                    {reward.target! <= challenge.value ? (
+                                                        <DoneIcon fontSize="small" sx={{ color: 'green' }} />
                                                     ) : (
-                                                        <span>✗</span>
-                                                    )}
+                                                        <AccessTimeIcon fontSize="medium" />)}
                                                 </Box>
                                             </Card>
                                         ))}
