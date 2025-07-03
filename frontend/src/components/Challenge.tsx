@@ -1,6 +1,7 @@
 import AccessTimeIcon from '@mui/icons-material/AccessTime';
 import CloseIcon from '@mui/icons-material/Close';
 import DoneIcon from '@mui/icons-material/Done';
+import SyncIcon from '@mui/icons-material/Sync';
 import {
     Avatar,
     Box,
@@ -11,15 +12,20 @@ import {
     Typography
 } from '@mui/material';
 import React, { useEffect, useState } from 'react';
+import { useAuth } from '../contexts/AuthContext';
+import { StravaAPI } from '../services/api';
 import { Challenge } from '../types';
 import { CustomProgressBar } from './ChallengeMeter';
 import { SimpleMap } from './Map';
+
 interface ChallengeProps {
     challenge: Challenge;
 }
 export const ChallengeCard: React.FC<ChallengeProps> = ({ challenge }) => {
     const [expandedChallenge, setExpandedChallenge] = useState<number | null>(null);
     const [position, setPosition] = useState<[number, number]>([51.505, -0.09]);
+    const [stravaData, setStravaData] = useState<StravaRunData[]>([]);
+    const { user } = useAuth();
     useEffect(() => {
         if (expandedChallenge === challenge.id && navigator.geolocation) {
             navigator.geolocation.getCurrentPosition(
@@ -28,6 +34,20 @@ export const ChallengeCard: React.FC<ChallengeProps> = ({ challenge }) => {
             );
         }
     }, [expandedChallenge, challenge.id]);
+
+
+    const handleStravaConnection = async () => {
+        const url = await StravaAPI.getStravaLink();
+        if (url.link) {
+            window.location.href = url.link; // Open in same tab to preserve auth context
+        }
+        //TODO: handle error
+    }
+
+    const handleStravaSync = async () => {
+        const data = await StravaAPI.getLastRunFromAthlete();
+        setStravaData(data)
+    }
 
     return (
         <>
@@ -157,7 +177,20 @@ export const ChallengeCard: React.FC<ChallengeProps> = ({ challenge }) => {
                         </Card>
                         <Card sx={{ minWidth: '49%', height: '90%' }}>
                             <Typography variant="h6" gutterBottom>
-                                Aktivität:
+                                <Box mt={2} display="flex" justifyContent="center">
+                                    <span>                                Aktivität:
+                                    </span>
+                                    {user?.strava_refresh_token ? (
+                                        <IconButton onClick={handleStravaSync} style={{ background: '#fc4c02', color: '#fff', border: 'none', borderRadius: 4, padding: '8px 16px', cursor: 'pointer' }}>
+                                            <SyncIcon className='me-3' /> Mit Strava synchronisieren
+                                        </IconButton>
+                                    ) : (
+                                        <button onClick={handleStravaConnection} style={{ background: '#fc4c02', color: '#fff', border: 'none', borderRadius: 4, padding: '8px 16px', cursor: 'pointer' }}>
+                                            Strava verbinden
+                                        </button>
+                                    )}
+                                </Box>
+
                             </Typography>
                             <Box sx={{ width: '100%', height: '100%', mt: 2 }}>
                                 {position && (

@@ -3,6 +3,7 @@ from sqlalchemy.orm import Session
 from passlib.context import CryptContext
 from app.models.models import User
 from app.schemas.schemas import UserCreate
+from app.services.crypto_service import encrypt_token, decrypt_token
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
@@ -54,6 +55,14 @@ def update_user(db: Session, user_id: int, user: User) -> Optional[User]:
     update_data = user.model_dump(exclude_unset=True)
     if "password" in update_data:
         update_data["hashed_password"] = get_password_hash(update_data.pop("password"))
+    if "strava_access_token" in update_data:
+        update_data["strava_access_token"] = encrypt_token(
+            update_data["strava_access_token"]
+        )
+    if "strava_refresh_token" in update_data:
+        update_data["strava_refresh_token"] = encrypt_token(
+            update_data["strava_refresh_token"]
+        )
 
     for field, value in update_data.items():
         setattr(db_user, field, value)

@@ -19,7 +19,10 @@ def update_value_for_all_challenges_on_user(
     if not challenges:
         return True
     for challenge in challenges:
-        challenge.value = (challenge.value or 0) + distance
+        new_distance = (challenge.value or 0) + distance
+        challenge.value = (
+            new_distance if new_distance <= challenge.max_value else challenge.max_value
+        )
         db.add(challenge)
     db.commit()
     return True

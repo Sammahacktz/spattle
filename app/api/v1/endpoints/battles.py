@@ -39,21 +39,39 @@ class DistanceUpdateRequest(BaseModel):
 
 
 @router.post("/", response_model=Battle, status_code=status.HTTP_201_CREATED)
-def create_battle_endpoint(battle: BattleCreate, db: Session = Depends(get_db)):
+def create_battle_endpoint(
+    battle: BattleCreate,
+    db: Session = Depends(get_db),
+    user: User = Depends(get_current_user),
+):
+    if not user:
+        raise HTTPException(status_code=400, detail="User ID required")
     return create_battle(db=db, battle=battle)
 
 
 @router.get("/{partycode}/members/", response_model=List[UserSummary])
 def list_battle_members(
-    partycode: str, skip: int = 0, limit: int = 100, db: Session = Depends(get_db)
+    partycode: str,
+    skip: int = 0,
+    limit: int = 100,
+    db: Session = Depends(get_db),
+    user: User = Depends(get_current_user),
 ):
+    if not user:
+        raise HTTPException(status_code=400, detail="User ID required")
     return get_battle_members(db, partycode)
 
 
 @router.get("/user/{user_id}", response_model=List[Battle])
 def list_battles_endpoint(
-    user_id: int, skip: int = 0, limit: int = 100, db: Session = Depends(get_db)
+    user_id: int,
+    skip: int = 0,
+    limit: int = 100,
+    db: Session = Depends(get_db),
+    user: User = Depends(get_current_user),
 ):
+    if not user:
+        raise HTTPException(status_code=400, detail="User ID required")
     params = {"db": db, "user_id": user_id, "skip": skip, "limit": limit}
     return [
         *get_battles_for_user(**params),
@@ -62,7 +80,13 @@ def list_battles_endpoint(
 
 
 @router.get("/{battle_id}", response_model=Battle)
-def read_battle(battle_id: int, db: Session = Depends(get_db)):
+def read_battle(
+    battle_id: int,
+    db: Session = Depends(get_db),
+    user: User = Depends(get_current_user),
+):
+    if not user:
+        raise HTTPException(status_code=400, detail="User ID required")
     db_battle = get_battle(db, battle_id=battle_id)
     if db_battle is None:
         raise HTTPException(status_code=404, detail="Battle not found")
@@ -80,8 +104,12 @@ def join_battle(
 
 @router.post("/challenge/create", response_model=Challenge)
 def create_challenge_endpoint(
-    challenge: ChallengeCreate, db: Session = Depends(get_db)
+    challenge: ChallengeCreate,
+    db: Session = Depends(get_db),
+    user: User = Depends(get_current_user),
 ):
+    if not user:
+        raise HTTPException(status_code=400, detail="User ID required")
     # battle_id is required in challenge
     # TODO combine creation process
     empty_challenge = create_challenge(db, challenge)
@@ -91,7 +119,13 @@ def create_challenge_endpoint(
 
 
 @router.get("/{partycode}/challenges/", response_model=list[Challenge])
-def create_challenge_endpoint(partycode: str, db: Session = Depends(get_db)):
+def create_challenge_endpoint(
+    partycode: str,
+    db: Session = Depends(get_db),
+    user: User = Depends(get_current_user),
+):
+    if not user:
+        raise HTTPException(status_code=400, detail="User ID required")
     return get_all_challenges_for_battle(db, partycode)
 
 
@@ -101,6 +135,8 @@ def update_user_challenge_distance(
     user: User = Depends(get_current_user),
     db: Session = Depends(get_db),
 ):
+    if not user:
+        raise HTTPException(status_code=400, detail="User ID required")
     update_value_for_all_challenges_on_user(db, user.id, req.distance)
     return Response(status_code=204)
 

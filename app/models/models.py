@@ -7,6 +7,7 @@ from sqlalchemy import (
     Float,
     ForeignKey,
     Text,
+    LargeBinary,
 )
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql import func
@@ -23,6 +24,8 @@ class User(Base):
     hashed_password = Column(String(255), nullable=False)
     distance_overall = Column(Float, default=0.0)
     created_at = Column(DateTime, default=func.now())
+    strava_access_token = Column(String(512), nullable=True)
+    strava_refresh_token = Column(String(512), nullable=True)
 
     # Relationships
     battles_created = relationship(
@@ -100,6 +103,7 @@ class Challenge(Base):
     rewards = relationship(
         "Reward", back_populates="challenge", cascade="all, delete-orphan"
     )
+    strava_data = relationship("StravaData", back_populates="challenge", uselist=False)
 
 
 class Reward(Base):

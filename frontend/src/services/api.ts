@@ -48,59 +48,144 @@ export const usersAPI = {
     },
 
     getAll: async (): Promise<User[]> => {
-        const response = await api.get('/users/');
-        return response.data;
+        try {
+            const response = await api.get('/users/');
+            return response.data;
+        } catch (error: any) {
+            redirectOn401Or403(error);
+            throw error;
+        }
     },
 
     getById: async (id: number): Promise<User> => {
-        const response = await api.get(`/users/${id}`);
-        return response.data;
+        try {
+            const response = await api.get(`/users/${id}`);
+            return response.data;
+        } catch (error: any) {
+            redirectOn401Or403(error);
+            throw error;
+        }
     },
+};
+
+
+// Strava API
+export const StravaAPI = {
+    getStravaLink: async (): Promise<{ "link": string }> => {
+        try {
+            const response = await api.get('/strava/auth-url/');
+            return response.data;
+        } catch (error: any) {
+            redirectOn401Or403(error);
+            throw error;
+        }
+    },
+    getLastRunFromAthlete: async (): Promise<StravaRunData> => {
+        try {
+            const response = await api.get('/strava/run/last/');
+            return response.data;
+        } catch (error: any) {
+            redirectOn401Or403(error);
+            throw error;
+        }
+    }
 };
 
 // Battles API
 export const battlesAPI = {
     getBattleUsers: async (partycode: string): Promise<User[]> => {
-        const response = await api.get(`/battles/${partycode}/members/`);
-        return response.data;
+        try {
+            const response = await api.get(`/battles/${partycode}/members/`);
+            return response.data;
+        } catch (error: any) {
+            redirectOn401Or403(error);
+            throw error;
+        }
     },
     create: async (battle: BattleCreate): Promise<Battle> => {
-        const response = await api.post('/battles/', battle);
-        return response.data;
+        try {
+            const response = await api.post('/battles/', battle);
+            return response.data;
+        } catch (error: any) {
+            redirectOn401Or403(error);
+            throw error;
+        }
     },
     createChallenge: async (challenge: ChallengeCreate): Promise<Challenge> => {
-        const response = await api.post(`/battles/challenge/create/`, challenge);
-        return response.data;
+        try {
+            const response = await api.post(`/battles/challenge/create/`, challenge);
+            return response.data;
+        } catch (error: any) {
+            redirectOn401Or403(error);
+            throw error;
+        }
     },
     getChallengesForBattle: async (partycode: string): Promise<Challenge[]> => {
-        const response = await api.get(`/battles/${partycode}/challenges/`);
-        return response.data;
+        try {
+            const response = await api.get(`/battles/${partycode}/challenges/`);
+            return response.data;
+        } catch (error: any) {
+            redirectOn401Or403(error);
+            throw error;
+        }
     },
     join: async (invite: string): Promise<Battle> => {
-        const response = await api.post(`/battles/join/${invite}`);
-        return response.data;
+        try {
+            const response = await api.post(`/battles/join/${invite}`);
+            return response.data;
+        } catch (error: any) {
+            redirectOn401Or403(error);
+            throw error;
+        }
     },
     getAllForUser: async (): Promise<Battle[]> => {
-        const response = await api.get('/battles/');
-        return response.data;
+        try {
+            const response = await api.get('/battles/');
+            return response.data;
+        } catch (error: any) {
+            redirectOn401Or403(error);
+            throw error;
+        }
     },
-
     getById: async (id: number): Promise<Battle> => {
-        const response = await api.get(`/battles/${id}`);
-        return response.data;
+        try {
+            const response = await api.get(`/battles/${id}`);
+            return response.data;
+        } catch (error: any) {
+            redirectOn401Or403(error);
+            throw error;
+        }
     },
-
     updateUsersDistance: async (distance: number): Promise<boolean> => {
-        const response = await api.post(`/battles/distance/`, { "distance": distance });
-        return response.data;
+        try {
+            const response = await api.post(`/battles/distance/`, { "distance": distance });
+            return response.data;
+        } catch (error: any) {
+            redirectOn401Or403(error);
+            throw error;
+        }
     },
-
     delete: async (id: number): Promise<void> => {
-        await api.delete(`/battles/${id}`);
+        try {
+            await api.delete(`/battles/${id}`);
+        } catch (error: any) {
+            redirectOn401Or403(error);
+            throw error;
+        }
     },
-
     getByUser: async (userId: number): Promise<Battle[]> => {
-        const response = await api.get(`/battles/user/${userId}`);
-        return response.data;
+        try {
+            const response = await api.get(`/battles/user/${userId}`);
+            return response.data;
+        } catch (error: any) {
+            redirectOn401Or403(error);
+            throw error;
+        }
     },
 };
+
+export function redirectOn401Or403(error: any) {
+    if (error.response && (error.response.status === 400)) {
+        window.location.href = '/login';
+    }
+}

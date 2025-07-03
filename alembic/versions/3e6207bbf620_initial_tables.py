@@ -1,8 +1,8 @@
 """Initial tables
 
-Revision ID: 1f8bd8ff1611
+Revision ID: 3e6207bbf620
 Revises: 
-Create Date: 2025-07-01 22:57:26.232167
+Create Date: 2025-07-03 18:54:42.494729
 
 """
 from alembic import op
@@ -10,7 +10,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision = '1f8bd8ff1611'
+revision = '3e6207bbf620'
 down_revision = None
 branch_labels = None
 depends_on = None
@@ -25,6 +25,8 @@ def upgrade() -> None:
     sa.Column('hashed_password', sa.String(length=255), nullable=False),
     sa.Column('distance_overall', sa.Float(), nullable=True),
     sa.Column('created_at', sa.DateTime(), nullable=True),
+    sa.Column('strava_access_token', sa.String(length=512), nullable=True),
+    sa.Column('strava_refresh_token', sa.String(length=512), nullable=True),
     sa.PrimaryKeyConstraint('id')
     )
     op.create_index(op.f('ix_users_email'), 'users', ['email'], unique=True)

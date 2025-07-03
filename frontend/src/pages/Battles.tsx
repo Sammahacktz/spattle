@@ -13,6 +13,7 @@ import {
     Typography
 } from '@mui/material';
 import React, { useEffect, useState } from 'react';
+import { useLocation } from 'react-router-dom';
 import { BattleGrid } from '../components/BattleGrid';
 import { useAuth } from '../contexts/AuthContext';
 import { battlesAPI } from '../services/api';
@@ -31,10 +32,17 @@ const Battles: React.FC = () => {
     });
     const [openJoin, setOpenJoin] = useState(false);
     const [inviteCode, setInviteCode] = useState('');
+    const location = useLocation();
+    const [stravaSuccess, setStravaSuccess] = useState(false);
 
     useEffect(() => {
         if (user) {
             loadUserBattles(user.id);
+        }
+        // Check for #strava-success in the URL hash
+        if (window.location.hash === '#strava-success') {
+            setStravaSuccess(true);
+            window.history.replaceState(null, '', window.location.pathname + window.location.search);
         }
     }, [user]);
 
@@ -96,6 +104,11 @@ const Battles: React.FC = () => {
 
     return (
         <Container maxWidth="lg">
+            {stravaSuccess && (
+                <Alert severity="success" sx={{ mb: 2 }}>
+                    Strava wurde erfolgreich verbunden!
+                </Alert>
+            )}
             <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'end', mb: 4 }}>
                 <Typography variant="h4" component="h1">
                     Deine Battles

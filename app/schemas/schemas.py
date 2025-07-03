@@ -1,5 +1,5 @@
 from typing import Optional, List
-from pydantic import BaseModel, EmailStr
+from pydantic import BaseModel, EmailStr, field_validator, model_validator
 from datetime import datetime
 
 
@@ -87,6 +87,12 @@ class BattleParticipation(BattleParticipationBase):
 class UserBase(BaseModel):
     username: str
     email: EmailStr
+    strava_access_token: bool = False
+    strava_refresh_token: bool = False
+
+    @field_validator("strava_access_token", "strava_refresh_token", mode="before")
+    def set_strava_token_bools(cls, value: str | None) -> bool:
+        return bool(value)
 
 
 class UserCreate(UserBase):
@@ -216,6 +222,29 @@ class Reward(RewardBase):
     id: int
     challenge: Optional[ChallengeSummary] = None
     user: Optional[UserSummary] = None
+
+    class Config:
+        from_attributes = True
+
+
+class StravaModel(BaseModel):
+    id: int
+    name: str
+    distance: float  # in meters
+    moving_time: int  # in seconds
+    elapsed_time: int  # in seconds
+    type: str
+    start_date: datetime
+    average_speed: Optional[float] = None  # m/s
+    max_speed: Optional[float] = None  # m/s
+    total_elevation_gain: Optional[float] = None  # meters
+    map: Optional[dict] = None
+    external_id: Optional[str] = None
+    upload_id: Optional[int] = None
+    kudos_count: Optional[int] = None
+    average_heartrate: Optional[float] = None
+    max_heartrate: Optional[float] = None
+    calories: Optional[float] = None
 
     class Config:
         from_attributes = True

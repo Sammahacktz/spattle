@@ -5,6 +5,8 @@ export interface User {
     is_active: boolean;
     created_at: string;
     updated_at?: string;
+    strava_refresh_token: boolean;
+    strava_access_token: boolean;
 }
 
 export interface Battle {
@@ -101,4 +103,24 @@ export interface RewardCreate {
     description: string;
     target: number;
     challenge_id: number;
+}
+
+export interface StravaRunData {
+    id: number;
+    name: string;
+    distance: number;
+    moving_time: number;
+    elapsed_time: number;
+    type: string;
+    start_date: string;
+    average_speed?: number;
+    max_speed?: number;
+    total_elevation_gain?: number;
+    map?: Record<string, any>;
+    external_id?: string;
+    upload_id?: number;
+    kudos_count?: number;
+    average_heartrate?: number;
+    max_heartrate?: number;
+    calories?: number;
 }
