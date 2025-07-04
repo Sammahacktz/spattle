@@ -30,7 +30,7 @@ export const SimpleMap: React.FC<SimpleMapProps> = ({ stravaPolyline }) => {
         polylinePositions = [];
     }
     return (
-        <MapContainer center={center} zoom={16} scrollWheelZoom={true} style={{ position: "relative", width: "100%", height: "400px" }}>
+        <MapContainer center={center} zoom={16} scrollWheelZoom={true} style={{ position: "relative", width: "100%", height: "350px" }}>
             <TileLayer
                 attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
                 url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"

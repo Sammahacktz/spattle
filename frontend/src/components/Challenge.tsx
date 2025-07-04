@@ -6,7 +6,9 @@ import {
     Box,
     Card,
     Chip,
+    Grid,
     IconButton,
+    Paper,
     Stack,
     Typography
 } from '@mui/material';
@@ -182,7 +184,23 @@ export const ChallengeCard: React.FC<ChallengeProps> = ({ challenge, onRefresh }
                                     </span>
                                 </Box>
                             </Typography>
-                            <Box sx={{ width: '100%' }}>
+                            <Card sx={{ position: "relative", width: "100%", height: "4rem", zIndex: "200" }}>
+                                <Grid container spacing={2}>
+                                    <Grid size={4}>
+                                        <Paper>size=8</Paper>
+                                    </Grid>
+                                    <Grid size={4}>
+                                        <Paper>size=4</Paper>
+                                    </Grid>
+                                    <Grid size={4}>
+                                        <Paper>size=4</Paper>
+                                    </Grid>
+                                    <Grid size={4}>
+                                        <Paper>size=8</Paper>
+                                    </Grid>
+                                </Grid>
+                            </Card>
+                            <Box sx={{ width: "100%" }}>
                                 {stravaData[0] && (
                                     <Box sx={{
 
