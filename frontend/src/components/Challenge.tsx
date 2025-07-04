@@ -26,6 +26,7 @@ interface ChallengeProps {
 export const ChallengeCard: React.FC<ChallengeProps> = ({ challenge, onRefresh }) => {
     const [expandedChallenge, setExpandedChallenge] = useState<number | null>(null);
     const [stravaData, setStravaData] = useState<StravaRunData[]>([]);
+    const [selectedStravaRun, setSelectedStravaRun] = useState<StravaRunData | undefined>(undefined);
     const { user } = useAuth();
     useEffect(() => {
         if (expandedChallenge) {
@@ -44,6 +45,7 @@ export const ChallengeCard: React.FC<ChallengeProps> = ({ challenge, onRefresh }
     const handleStravaSync = async (refresh: boolean = true) => {
         const data = await StravaAPI.getLastRunFromAthlete();
         setStravaData(data)
+        setSelectedStravaRun(data[0])
         refresh && onRefresh()
     }
 
@@ -129,7 +131,7 @@ export const ChallengeCard: React.FC<ChallengeProps> = ({ challenge, onRefresh }
                             rewards={challenge.rewards!}
                             detailed={true}
                             activityParts={stravaData}
-
+                            onSelect={(entry) => setSelectedStravaRun(entry)}
                         />
                     </Box>
                     <Box mt={1}>
@@ -187,16 +189,25 @@ export const ChallengeCard: React.FC<ChallengeProps> = ({ challenge, onRefresh }
                             <Card sx={{ position: "relative", width: "100%", height: "4rem", zIndex: "200" }}>
                                 <Grid container spacing={2}>
                                     <Grid size={4}>
-                                        <Paper>size=8</Paper>
+                                        <Paper>Name: {selectedStravaRun?.name ?? "-"}</Paper>
                                     </Grid>
                                     <Grid size={4}>
-                                        <Paper>size=4</Paper>
+                                        <Paper>Distanz: {selectedStravaRun?.distance ?? "-"}</Paper>
                                     </Grid>
                                     <Grid size={4}>
-                                        <Paper>size=4</Paper>
+                                        <Paper>Geschwindigkeit: {selectedStravaRun?.moving_time ?? "-"}</Paper>
                                     </Grid>
                                     <Grid size={4}>
-                                        <Paper>size=8</Paper>
+                                        <Paper>Durchs. Herzrate: {selectedStravaRun?.average_heartrate ?? "-"}</Paper>
+                                    </Grid>
+                                    <Grid size={4}>
+                                        <Paper>Benötigte Zeit: {selectedStravaRun?.elapsed_time ?? "-"}</Paper>
+                                    </Grid>
+                                    <Grid size={4}>
+                                        <Paper>Höhenmeter: {selectedStravaRun?.total_elevation_gain ?? "-"}</Paper>
+                                    </Grid>
+                                    <Grid size={4}>
+                                        <Paper>Max Speed: {selectedStravaRun?.max_speed ?? "-"}</Paper>
                                     </Grid>
                                 </Grid>
                             </Card>

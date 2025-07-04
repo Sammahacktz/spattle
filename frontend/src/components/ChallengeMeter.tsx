@@ -16,6 +16,7 @@ interface CustomProgressBarProps {
     rewards: RewardMark[];
     detailed?: boolean;
     activityParts?: StravaRunData[];
+    onSelect?: (entry: StravaRunData) => void;
 }
 
 // Fixed color palette for activity segments
@@ -30,11 +31,8 @@ const getColorForActivity = (activity: StravaRunData, idx: number) => {
     return colorPalette[idx % colorPalette.length];
 };
 
-const handleRunClick = (activity: StravaRunData) => {
-    //TODO
-}
 
-export const CustomProgressBar: React.FC<CustomProgressBarProps> = ({ value, max, rewards, activityParts, detailed = false }) => {
+export const CustomProgressBar: React.FC<CustomProgressBarProps> = ({ value, max, rewards, activityParts, detailed = false, onSelect = () => { } }) => {
     const marks = rewards.map((r, i) => ({
         value: r.target,
         label: r.title || `Belohnung ${i + 1}`,
@@ -73,7 +71,7 @@ export const CustomProgressBar: React.FC<CustomProgressBarProps> = ({ value, max
                                             height: 12,
                                             opacity: 0.8,
                                         }
-                                    }} onClick={() => handleRunClick(part)}></Box>
+                                    }} onClick={() => onSelect(part)}></Box>
                                 ))}
                                 {/* Difference bar: only show if there is a gap between activity parts and progress */}
                                 {diffKm > 0 && (
