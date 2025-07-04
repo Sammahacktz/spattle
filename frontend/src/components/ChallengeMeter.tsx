@@ -14,6 +14,7 @@ interface CustomProgressBarProps {
     max: number;
     rewards: RewardMark[];
     detailed?: boolean;
+    activityParts?: StravaRunData[];
 }
 
 interface MarkLabelProps {
@@ -24,7 +25,7 @@ interface MarkLabelProps {
 }
 
 
-export const CustomProgressBar: React.FC<CustomProgressBarProps> = ({ value, max, rewards, detailed = false }) => {
+export const CustomProgressBar: React.FC<CustomProgressBarProps> = ({ value, max, rewards, activityParts, detailed = false }) => {
     const marks = rewards.map((r, i) => ({
         value: r.target,
         label: r.title || `Belohnung ${i + 1}`,
@@ -38,6 +39,7 @@ export const CustomProgressBar: React.FC<CustomProgressBarProps> = ({ value, max
         <Box sx={{ position: 'relative', width: '100%', height: 80, px: 2 }}>
 
             <Box sx={{ position: 'absolute', left: 0, right: 0, top: 32, height: 8, bgcolor: '#ddd', borderRadius: 4 }}>
+                {activityParts?.map()}
                 <Box sx={{
                     position: 'absolute',
                     left: 0,

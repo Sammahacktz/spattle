@@ -185,7 +185,7 @@ export const battlesAPI = {
 };
 
 export function redirectOn401Or403(error: any) {
-    if (error.response && (error.response.status === 400)) {
+    if (error.response && (error.response.status === 401)) {
         window.location.href = '/login';
     }
 }
