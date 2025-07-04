@@ -201,10 +201,14 @@ export const ChallengeCard: React.FC<ChallengeProps> = ({ challenge, onRefresh }
                                         <Paper>Durchs. Herzrate: {selectedStravaRun?.average_heartrate ?? "-"}</Paper>
                                     </Grid>
                                     <Grid size={4}>
-                                        <Paper>Benötigte Zeit: {selectedStravaRun?.elapsed_time ?? "-"}</Paper>
+                                        <Paper>
+                                            Benötigte Zeit: {selectedStravaRun?.elapsed_time != null
+                                                ? `${Math.round(selectedStravaRun.elapsed_time / 60)} min`
+                                                : "-"}
+                                        </Paper>
                                     </Grid>
                                     <Grid size={4}>
-                                        <Paper>Höhenmeter: {selectedStravaRun?.total_elevation_gain ?? "-"}</Paper>
+                                        <Paper>Höhenmeter: {selectedStravaRun?.total_elevation_gain ?? "-"}m</Paper>
                                     </Grid>
                                     <Grid size={4}>
                                         <Paper>Max Speed: {selectedStravaRun?.max_speed ?? "-"}</Paper>
