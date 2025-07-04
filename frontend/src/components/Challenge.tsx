@@ -58,13 +58,15 @@ export const ChallengeCard: React.FC<ChallengeProps> = ({ challenge, onRefresh }
                     boxShadow: 1,
                     background: '#fff',
                     width: expandedChallenge === challenge.id ? '95vw' : 300,
-                    height: expandedChallenge === challenge.id ? '95vh' : 'auto',
+                    minHeight: expandedChallenge === challenge.id ? '90vh' : 'auto',
+                    maxHeight: expandedChallenge === challenge.id ? '90vh' : 'none',
                     transition: 'width 0.3s, height 0.3s',
                     cursor: expandedChallenge !== challenge.id ? 'pointer' : 'default',
                     zIndex: expandedChallenge === challenge.id ? 10 : 1,
                     position: expandedChallenge === challenge.id ? 'fixed' : 'relative',
                     top: expandedChallenge === challenge.id ? '5rem' : 'auto',
                     left: expandedChallenge === challenge.id ? '2.5vw' : 'auto',
+                    overflowY: expandedChallenge === challenge.id ? 'auto' : 'visible',
                 }}
             >
                 {expandedChallenge !== challenge.id ? (<>
@@ -134,8 +136,8 @@ export const ChallengeCard: React.FC<ChallengeProps> = ({ challenge, onRefresh }
                         </Typography>
                     </Box>
 
-                    <Box sx={{ position: "relative", display: 'flex', height: "100%", gap: 2 }}>
-                        <Card sx={{ width: '50%', height: '100%', mt: 2 }}>
+                    <Box sx={{ position: "relative", display: 'flex', gap: 2 }} className="flex-column flex-md-row">
+                        <Card className="mb-3 flex-fill" sx={{ width: { xs: '100%', md: '50%' }, height: '100%', mt: 2 }}>
                             <Typography variant="h6" gutterBottom>
                                 Verdiente Belohnungen:
                             </Typography>
@@ -173,18 +175,18 @@ export const ChallengeCard: React.FC<ChallengeProps> = ({ challenge, onRefresh }
                                 )}
                             </Box>
                         </Card>
-                        <Card sx={{ minWidth: '49%', height: '100%', position: 'relative' }}>
+                        <Card className="mb-3 flex-fill" sx={{ minWidth: { xs: '100%', md: '49%' }, height: '100%', position: 'relative' }}>
                             <Typography variant="h6" gutterBottom>
                                 <Box mt={2} display="flex" justifyContent="center">
                                     <span>   Aktivität:
                                     </span>
                                 </Box>
                             </Typography>
-                            <Box>
+                            <Box sx={{ width: '100%' }}>
                                 {stravaData[0] && (
                                     <Box sx={{
 
-                                        filter: true ? 'blur(4px)' : 'none',
+                                        filter: !user?.strava_refresh_token ? 'blur(4px)' : 'none',
                                         transition: 'filter 0.3s',
                                     }}>
                                         <SimpleMap stravaPolyline={stravaData[0].map?.summary_polyline} />

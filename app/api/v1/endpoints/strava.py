@@ -100,7 +100,6 @@ def get_last_strava_run(
         test = response.json()
         if test:
             sync_activities(db, user.id, [StravaModel.model_validate(a) for a in test])
-        print(json.dumps(test, indent=4))
         return test
     else:
         raise HTTPException(
