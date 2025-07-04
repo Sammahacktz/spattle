@@ -7,7 +7,7 @@ from app.services.crypto_service import encrypt_token, decrypt_token
 from app.schemas.schemas import StravaModel
 import os
 import httpx
-import urllib.parse
+from datetime import datetime
 
 
 CLIENT_ID = os.environ.get("STRAVA_CLIENT_ID")
@@ -19,12 +19,35 @@ SCOPES = "read,activity:read_all"
 def sync_activities(
     db: Session, user_id: int, strava_models: list[StravaModel]
 ) -> None:
-    """syncs activities"""
+    """syncs activities, only adds activities within challenge date range"""
+
+    def activity_in_timeframe(challenge: Challenge, activity: StravaModel):
+        # Make all datetimes timezone naive
+        def to_naive(dt):
+            if (
+                dt is not None
+                and hasattr(dt, "replace")
+                and getattr(dt, "tzinfo", None)
+            ):
+                return dt.replace(tzinfo=None)
+            return dt
+
+        challenge_start = to_naive(challenge.start_datetime)
+        challenge_end = to_naive(challenge.end_datetime)
+        activity_start = to_naive(activity.start_date)
+
+        if challenge_start <= activity_start <= challenge_end:
+            return True
+        return False
+
     challenges = db.query(Challenge).filter(Challenge.assigned_user_id == user_id).all()
     for challenge in challenges:
         activity_ids = parse_comma_string(challenge.activity_ids)
         for activity in strava_models:
-            if activity.id not in activity_ids:
+            if (
+                activity_in_timeframe(challenge, activity)
+                and activity.id not in activity_ids
+            ):
                 activity_ids.append(activity.id)
                 distance_in_km = (activity.distance / 1000) + challenge.value
                 challenge.value = (
@@ -32,9 +55,7 @@ def sync_activities(
                     if distance_in_km <= challenge.max_value
                     else challenge.max_value
                 )
-
         challenge.activity_ids = ",".join([str(a) for a in activity_ids])
-
     db.commit()
 
 
