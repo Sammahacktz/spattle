@@ -96,6 +96,7 @@ export const ChallengeCard: React.FC<ChallengeProps> = ({ challenge, onRefresh }
                             value={challenge.value}
                             max={challenge.max_value!}
                             rewards={challenge.rewards!}
+                            activityParts={stravaData}
                         />
                     </Box>
                     <Box mt={1}>
@@ -130,6 +131,8 @@ export const ChallengeCard: React.FC<ChallengeProps> = ({ challenge, onRefresh }
                             max={challenge.max_value!}
                             rewards={challenge.rewards!}
                             detailed={true}
+                            activityParts={stravaData}
+
                         />
                     </Box>
                     <Box mt={1}>

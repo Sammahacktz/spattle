@@ -7,6 +7,7 @@ import {
 } from '@mui/material';
 import Tooltip from '@mui/material/Tooltip';
 import React from 'react';
+import { StravaRunData } from '../types';
 
 type RewardMark = { title: string; target?: number, description?: string | undefined };
 interface CustomProgressBarProps {
@@ -24,6 +25,19 @@ interface MarkLabelProps {
     position: 'top' | 'bottom';
 }
 
+// Fixed color palette for activity segments
+const colorPalette = [
+    '#e6194b', '#3cb44b', '#ffe119', '#4363d8', '#f58231', '#911eb4', '#46f0f0', '#f032e6', '#bcf60c', '#fabebe',
+    '#008080', '#e6beff', '#9a6324', '#fffac8', '#800000', '#aaffc3', '#808000', '#ffd8b1', '#000075', '#808080'
+];
+const getColorForActivity = (activity: StravaRunData, idx: number) => {
+    // If activity.id exists, use it for stable color assignment
+    if (activity.id !== undefined && activity.id !== null) {
+        return colorPalette[Math.abs(Number(activity.id)) % colorPalette.length];
+    }
+    // Fallback: use index
+    return colorPalette[idx % colorPalette.length];
+};
 
 export const CustomProgressBar: React.FC<CustomProgressBarProps> = ({ value, max, rewards, activityParts, detailed = false }) => {
     const marks = rewards.map((r, i) => ({
@@ -39,17 +53,57 @@ export const CustomProgressBar: React.FC<CustomProgressBarProps> = ({ value, max
         <Box sx={{ position: 'relative', width: '100%', height: 80, px: 2 }}>
 
             <Box sx={{ position: 'absolute', left: 0, right: 0, top: 32, height: 8, bgcolor: '#ddd', borderRadius: 4 }}>
-                {activityParts?.map()}
-                <Box sx={{
-                    position: 'absolute',
-                    left: 0,
-                    width: `${animatedPercent}%`,
-                    top: 0,
-                    height: 8,
-                    bgcolor: 'primary.main',
-                    borderRadius: 4,
-                    transition: 'width 2s',
-                }} />
+                {activityParts ? (
+                    (() => {
+                        const totalPartsKm = activityParts.reduce((sum, p) => (sum + p.distance) / 1000, 0);
+                        const diffKm = Math.max(0, value - totalPartsKm);
+                        const leftPercent = max > 0 ? (totalPartsKm / max) * 100 : 0;
+                        const diffPercent = max > 0 ? (diffKm / max) * 100 : 0;
+                        return (
+                            <>
+                                {activityParts.map((part, i) => (
+                                    <Box key={i} sx={{
+                                        position: 'absolute',
+                                        left: `${max > 0 ? (activityParts.slice(0, i).reduce((sum, p) => sum + p.distance / 1000, 0) / max) * 100 : 0}%`,
+                                        width: `${max > 0 ? ((part.distance / 1000) / max) * 100 : 0}%`,
+                                        top: 0,
+                                        height: 8,
+                                        bgcolor: getColorForActivity(part, i),
+                                        borderRadius: 4,
+                                        transition: 'width 2s',
+                                        borderLeft: "1px solid white",
+                                        borderRight: "1px solid white",
+                                    }}></Box>
+                                ))}
+                                {/* Difference bar: only show if there is a gap between activity parts and progress */}
+                                {diffKm > 0 && (
+                                    <Box sx={{
+                                        position: 'absolute',
+                                        left: `${leftPercent}%`,
+                                        width: `${diffPercent}%`,
+                                        top: 0,
+                                        height: 8,
+                                        bgcolor: 'blue',
+                                        borderRadius: 4,
+                                        transition: 'width 2s',
+                                        borderLeft: "1px solid #fff",
+                                        borderRight: "1px solid #fff",
+                                    }} />
+                                )}
+                            </>
+                        );
+                    })()
+                ) : (
+                    <Box sx={{
+                        position: 'absolute',
+                        left: 0,
+                        width: `${animatedPercent}%`,
+                        top: 0,
+                        height: 8,
+                        bgcolor: 'primary.main',
+                        borderRadius: 4,
+                        transition: 'width 2s',
+                    }} />)}
                 <Box sx={{
                     position: 'absolute',
                     left: `${animatedPercent}%`,
