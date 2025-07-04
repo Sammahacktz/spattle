@@ -18,26 +18,21 @@ interface CustomProgressBarProps {
     activityParts?: StravaRunData[];
 }
 
-interface MarkLabelProps {
-    label: string;
-    description: string | undefined;
-    percent: number;
-    position: 'top' | 'bottom';
-}
-
 // Fixed color palette for activity segments
 const colorPalette = [
-    '#e6194b', '#3cb44b', '#ffe119', '#4363d8', '#f58231', '#911eb4', '#46f0f0', '#f032e6', '#bcf60c', '#fabebe',
+    '#3cb44b', '#ffe119', '#4363d8', '#f58231', '#911eb4', '#46f0f0', '#f032e6', '#bcf60c', '#fabebe',
     '#008080', '#e6beff', '#9a6324', '#fffac8', '#800000', '#aaffc3', '#808000', '#ffd8b1', '#000075', '#808080'
 ];
 const getColorForActivity = (activity: StravaRunData, idx: number) => {
-    // If activity.id exists, use it for stable color assignment
     if (activity.id !== undefined && activity.id !== null) {
         return colorPalette[Math.abs(Number(activity.id)) % colorPalette.length];
     }
-    // Fallback: use index
     return colorPalette[idx % colorPalette.length];
 };
+
+const handleRunClick = (activity: StravaRunData) => {
+    //TODO
+}
 
 export const CustomProgressBar: React.FC<CustomProgressBarProps> = ({ value, max, rewards, activityParts, detailed = false }) => {
     const marks = rewards.map((r, i) => ({
@@ -73,7 +68,12 @@ export const CustomProgressBar: React.FC<CustomProgressBarProps> = ({ value, max
                                         transition: 'width 2s',
                                         borderLeft: "1px solid white",
                                         borderRight: "1px solid white",
-                                    }}></Box>
+                                        '&:hover': {
+                                            top: -2,
+                                            height: 12,
+                                            opacity: 0.8,
+                                        }
+                                    }} onClick={() => handleRunClick(part)}></Box>
                                 ))}
                                 {/* Difference bar: only show if there is a gap between activity parts and progress */}
                                 {diffKm > 0 && (
