@@ -2,6 +2,8 @@ from typing import Optional, List
 from pydantic import BaseModel, EmailStr, field_validator, model_validator
 from datetime import datetime
 
+from app.schemas.validators import parse_comma_string
+
 
 # Token schemas
 class Token(BaseModel):
@@ -194,6 +196,12 @@ class Challenge(ChallengeBase):
     creator: Optional[UserSummary] = None
     assigned_user: Optional[UserSummary] = None
     rewards: list["RewardSummary"] = []
+    activity_ids: list[int] = []
+
+    @field_validator("activity_ids", mode="before")
+    def validate_comma_string(cls, v: str | None) -> list[int]:
+        """validates comma seperated strings to list of int"""
+        return parse_comma_string(v)
 
     class Config:
         from_attributes = True

@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { AuthToken, Battle, BattleCreate, Challenge, ChallengeCreate, LoginCredentials, User, UserCreate } from '../types';
+import { AuthToken, Battle, BattleCreate, Challenge, ChallengeCreate, LoginCredentials, StravaRunData, User, UserCreate } from '../types';
 
 const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:8000';
 
@@ -80,7 +80,7 @@ export const StravaAPI = {
             throw error;
         }
     },
-    getLastRunFromAthlete: async (): Promise<StravaRunData> => {
+    getLastRunFromAthlete: async (): Promise<StravaRunData[]> => {
         try {
             const response = await api.get('/strava/run/last/');
             return response.data;

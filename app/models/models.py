@@ -95,6 +95,7 @@ class Challenge(Base):
     assigned_user_id = Column(
         Integer, ForeignKey("users.id"), nullable=False
     )  # The user this challenge is for
+    activity_ids = Column(Text, nullable=True)
 
     # Relationships
     battle = relationship("Battle", back_populates="challenges")
@@ -103,7 +104,6 @@ class Challenge(Base):
     rewards = relationship(
         "Reward", back_populates="challenge", cascade="all, delete-orphan"
     )
-    strava_data = relationship("StravaData", back_populates="challenge", uselist=False)
 
 
 class Reward(Base):

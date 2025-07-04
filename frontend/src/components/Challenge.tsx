@@ -14,14 +14,15 @@ import {
 import React, { useEffect, useState } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import { StravaAPI } from '../services/api';
-import { Challenge } from '../types';
+import { Challenge, StravaRunData } from '../types';
 import { CustomProgressBar } from './ChallengeMeter';
 import { SimpleMap } from './Map';
 
 interface ChallengeProps {
     challenge: Challenge;
+    onRefresh: () => {};
 }
-export const ChallengeCard: React.FC<ChallengeProps> = ({ challenge }) => {
+export const ChallengeCard: React.FC<ChallengeProps> = ({ challenge, onRefresh }) => {
     const [expandedChallenge, setExpandedChallenge] = useState<number | null>(null);
     const [position, setPosition] = useState<[number, number]>([51.505, -0.09]);
     const [stravaData, setStravaData] = useState<StravaRunData[]>([]);
@@ -47,6 +48,7 @@ export const ChallengeCard: React.FC<ChallengeProps> = ({ challenge }) => {
     const handleStravaSync = async () => {
         const data = await StravaAPI.getLastRunFromAthlete();
         setStravaData(data)
+        onRefresh()
     }
 
     return (
@@ -193,8 +195,8 @@ export const ChallengeCard: React.FC<ChallengeProps> = ({ challenge }) => {
 
                             </Typography>
                             <Box sx={{ width: '100%', height: '100%', mt: 2 }}>
-                                {position && (
-                                    <SimpleMap position={position}></SimpleMap>
+                                {stravaData[0] && (
+                                    <SimpleMap stravaPolyline={stravaData[0].map?.summary_polyline}></SimpleMap>
                                 )}
                             </Box>
                         </Card>

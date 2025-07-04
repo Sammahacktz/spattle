@@ -8,7 +8,11 @@ from sqlalchemy.orm import Session
 import urllib.parse
 from app.schemas.schemas import StravaModel
 from app.services.crypto_service import decrypt_token, encrypt_token
-from app.services.strava_service import exchange_code_for_tokens, refresh_access_token
+from app.services.strava_service import (
+    exchange_code_for_tokens,
+    refresh_access_token,
+    sync_activities,
+)
 from app.db.database import get_db
 from app.services.auth_service import get_current_user
 from app.models.models import User
@@ -93,7 +97,11 @@ def get_last_strava_run(
         headers = {"Authorization": f"Bearer {access_token}"}
         response = httpx.get(url, headers=headers)
     if response.status_code == 200:
-        return response.json()
+        test = response.json()
+        if test:
+            sync_activities(db, user.id, [StravaModel.model_validate(a) for a in test])
+        print(json.dumps(test, indent=4))
+        return test
     else:
         raise HTTPException(
             status_code=400, detail="Failed to fetch Strava activities."

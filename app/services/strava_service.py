@@ -1,7 +1,10 @@
 from fastapi import HTTPException
 from sqlalchemy.orm import Session
+from app.models.models import Challenge
+from app.schemas.validators import parse_comma_string
 from app.services.user_service import get_user
 from app.services.crypto_service import encrypt_token, decrypt_token
+from app.schemas.schemas import StravaModel
 import os
 import httpx
 import urllib.parse
@@ -11,6 +14,28 @@ CLIENT_ID = os.environ.get("STRAVA_CLIENT_ID")
 CLIENT_SECRET = os.environ.get("STRAVA_CLIENT_SECRET")
 REDIRECT_URI = os.environ.get("STRAVA_REDIRECT_URI")
 SCOPES = "read,activity:read_all"
+
+
+def sync_activities(
+    db: Session, user_id: int, strava_models: list[StravaModel]
+) -> None:
+    """syncs activities"""
+    challenges = db.query(Challenge).filter(Challenge.assigned_user_id == user_id).all()
+    for challenge in challenges:
+        activity_ids = parse_comma_string(challenge.activity_ids)
+        for activity in strava_models:
+            if activity.id not in activity_ids:
+                activity_ids.append(activity.id)
+                distance_in_km = (activity.distance / 1000) + challenge.value
+                challenge.value = (
+                    distance_in_km
+                    if distance_in_km <= challenge.max_value
+                    else challenge.max_value
+                )
+
+        challenge.activity_ids = ",".join([str(a) for a in activity_ids])
+
+    db.commit()
 
 
 def exchange_code_for_tokens(db: Session, user_id: int, code: str):

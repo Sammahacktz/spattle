@@ -330,7 +330,7 @@ export const Party: React.FC = () => {
                 mt={3}
             >
                 {challenges.map((challenge) => (
-                    <ChallengeCard key={challenge.id} challenge={challenge} />
+                    <ChallengeCard key={challenge.id} challenge={challenge} onRefresh={() => loadChallengesForBattle(partycode!)} />
                 ))}
                 <Fab
                     color="primary"
