@@ -1,6 +1,7 @@
 import AccessTimeIcon from '@mui/icons-material/AccessTime';
 import CloseIcon from '@mui/icons-material/Close';
 import DoneIcon from '@mui/icons-material/Done';
+import ReplayIcon from '@mui/icons-material/Replay';
 import {
     Avatar,
     Box,
@@ -29,7 +30,7 @@ export const ChallengeCard: React.FC<ChallengeProps> = ({ challenge, onRefresh }
     const [selectedStravaRun, setSelectedStravaRun] = useState<StravaRunData | undefined>(undefined);
     const { user } = useAuth();
     useEffect(() => {
-        if (expandedChallenge) {
+        if (expandedChallenge && user?.strava_refresh_token) {
             handleStravaSync(false)
         }
     }, [expandedChallenge]);
@@ -45,7 +46,7 @@ export const ChallengeCard: React.FC<ChallengeProps> = ({ challenge, onRefresh }
     const handleStravaSync = async (refresh: boolean = true) => {
         const data = await StravaAPI.getLastRunFromAthlete();
         setStravaData(data)
-        setSelectedStravaRun(data[0])
+        setSelectedStravaRun(data.filter((value) => challenge.activity_ids.includes(value.id))[0] ?? undefined)
         refresh && onRefresh()
     }
 
@@ -130,7 +131,7 @@ export const ChallengeCard: React.FC<ChallengeProps> = ({ challenge, onRefresh }
                             max={challenge.max_value!}
                             rewards={challenge.rewards!}
                             detailed={true}
-                            activityParts={stravaData}
+                            activityParts={stravaData.filter((entry) => challenge.activity_ids.includes(entry.id))}
                             onSelect={(entry) => setSelectedStravaRun(entry)}
                         />
                     </Box>
@@ -215,17 +216,8 @@ export const ChallengeCard: React.FC<ChallengeProps> = ({ challenge, onRefresh }
                                     </Grid>
                                 </Grid>
                             </Card>
-                            <Box sx={{ width: "100%" }}>
-                                {stravaData[0] && (
-                                    <Box sx={{
-
-                                        filter: !user?.strava_refresh_token ? 'blur(4px)' : 'none',
-                                        transition: 'filter 0.3s',
-                                    }}>
-                                        <SimpleMap stravaPolyline={stravaData[0].map?.summary_polyline} />
-                                    </Box>
-                                )}
-                                {!user?.strava_refresh_token && (
+                            <Box sx={{ width: "100%", minHeight: '350px', position: 'relative' }}>
+                                {!user?.strava_refresh_token ? (
                                     <Box sx={{
                                         position: 'absolute',
                                         top: 0,
@@ -236,10 +228,24 @@ export const ChallengeCard: React.FC<ChallengeProps> = ({ challenge, onRefresh }
                                         alignItems: 'center',
                                         justifyContent: 'center',
                                         zIndex: 122,
+                                        background: 'rgba(255,255,255,0.85)',
                                     }}>
                                         <button onClick={handleStravaConnection} style={{ background: '#fc4c02', color: '#fff', border: 'none', borderRadius: 4, padding: '16px 32px', cursor: 'pointer', fontSize: '1.2rem', boxShadow: '0 2px 8px rgba(0,0,0,0.15)' }}>
                                             Strava verbinden
                                         </button>
+                                    </Box>
+                                ) : selectedStravaRun ? (
+                                    <Box>
+                                        <SimpleMap stravaPolyline={selectedStravaRun.map?.summary_polyline} />
+                                    </Box>
+                                ) : (
+                                    <Box sx={{
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        justifyContent: 'center',
+                                        minHeight: "350px"
+                                    }}>
+                                        Keine Strava daten verfügbar <IconButton onClick={() => handleStravaSync()}><ReplayIcon /></IconButton>
                                     </Box>
                                 )}
                             </Box>

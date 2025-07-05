@@ -70,6 +70,7 @@ export interface Challenge {
     creator?: User;
     assigned_user?: User;
     rewards: Reward[];
+    activity_ids: number[]
 }
 
 export interface ChallengeCreate {

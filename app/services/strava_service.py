@@ -16,9 +16,7 @@ REDIRECT_URI = os.environ.get("STRAVA_REDIRECT_URI")
 SCOPES = "read,activity:read_all"
 
 
-def sync_activities(
-    db: Session, user_id: int, strava_models: list[StravaModel]
-) -> None:
+def sync_activities(db: Session, user_id: int, strava_models: list[StravaModel]):
     """syncs activities, only adds activities within challenge date range"""
 
     def activity_in_timeframe(challenge: Challenge, activity: StravaModel):

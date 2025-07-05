@@ -57,38 +57,72 @@ export const CustomProgressBar: React.FC<CustomProgressBarProps> = ({ value, max
                         return (
                             <>
                                 {activityParts.map((part, i) => (
-                                    <Box key={i} sx={{
-                                        position: 'absolute',
-                                        left: `${max > 0 ? (activityParts.slice(0, i).reduce((sum, p) => sum + p.distance / 1000, 0) / max) * 100 : 0}%`,
-                                        width: `${max > 0 ? ((part.distance / 1000) / max) * 100 : 0}%`,
-                                        top: selectedRun === part.id ? -1 : 0,
-                                        height: selectedRun === part.id ? 10 : 8,
-                                        bgcolor: getColorForActivity(part, i),
-                                        borderRadius: 4,
-                                        transition: 'width 2s',
-                                        borderLeft: "1px solid white",
-                                        borderRight: "1px solid white",
-                                        '&:hover': {
-                                            top: -2,
-                                            height: 12,
-                                            opacity: 0.8,
+                                    <Tooltip
+                                        key={i}
+                                        title={
+                                            <>
+                                                <Typography variant="subtitle2">{part.name || `Aktivität ${i + 1}`}</Typography>
+                                                <Typography variant="caption">
+                                                    Distanz: {(part.distance / 1000).toLocaleString('de-DE', { maximumFractionDigits: 2 })} km<br />
+                                                    Zeit: {part.elapsed_time ? `${Math.round(part.elapsed_time / 60)} min` : '-'}<br />
+                                                    Datum: {part.start_date ? new Date(part.start_date).toLocaleDateString('de-DE') : '-'}
+                                                </Typography>
+                                                <Typography variant="caption">
+                                                    klick für mehr information
+                                                </Typography>
+                                            </>
                                         }
-                                    }} onClick={() => { onSelect(part); setSelectedRun(part.id) }}></Box>
+                                        arrow
+                                    >
+                                        <Box
+                                            sx={{
+                                                position: 'absolute',
+                                                left: `${max > 0 ? (activityParts.slice(0, i).reduce((sum, p) => sum + p.distance / 1000, 0) / max) * 100 : 0}%`,
+                                                width: `${max > 0 ? ((part.distance / 1000) / max) * 100 : 0}%`,
+                                                top: selectedRun === part.id ? -1 : 0,
+                                                height: selectedRun === part.id ? 10 : 8,
+                                                bgcolor: getColorForActivity(part, i),
+                                                borderRadius: 4,
+                                                transition: 'width 2s',
+                                                borderLeft: "1px solid white",
+                                                borderRight: "1px solid white",
+                                                '&:hover': {
+                                                    top: -2,
+                                                    height: 12,
+                                                    opacity: 0.8,
+                                                }
+                                            }}
+                                            onClick={() => { onSelect(part); setSelectedRun(part.id) }}
+                                        />
+                                    </Tooltip>
                                 ))}
                                 {/* Difference bar: only show if there is a gap between activity parts and progress */}
                                 {diffKm > 0 && (
-                                    <Box sx={{
-                                        position: 'absolute',
-                                        left: `${leftPercent}%`,
-                                        width: `${diffPercent}%`,
-                                        top: 0,
-                                        height: 8,
-                                        bgcolor: 'blue',
-                                        borderRadius: 4,
-                                        transition: 'width 2s',
-                                        borderLeft: "1px solid #fff",
-                                        borderRight: "1px solid #fff",
-                                    }} />
+                                    <Tooltip
+                                        key={"diff-activity"}
+                                        title={
+                                            <>
+                                                <Typography variant="subtitle2">Manuell hinzugefügte Strecke</Typography>
+                                                <Typography variant="caption">
+                                                    Keine weiteren Informationen verfügbar
+                                                </Typography>
+                                            </>
+                                        }
+                                        arrow
+                                    >
+                                        <Box sx={{
+                                            position: 'absolute',
+                                            left: `${leftPercent}%`,
+                                            width: `${diffPercent}%`,
+                                            top: 0,
+                                            height: 8,
+                                            bgcolor: 'blue',
+                                            borderRadius: 4,
+                                            transition: 'width 2s',
+                                            borderLeft: "1px solid #fff",
+                                            borderRight: "1px solid #fff",
+                                        }} />
+                                    </Tooltip>
                                 )}
                             </>
                         );
