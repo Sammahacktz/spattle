@@ -5,8 +5,15 @@ import ReplayIcon from '@mui/icons-material/Replay';
 import {
     Avatar,
     Box,
+    Button,
     Card,
+    Checkbox,
     Chip,
+    Dialog,
+    DialogActions,
+    DialogContent,
+    DialogTitle,
+    FormControlLabel,
     Grid,
     IconButton,
     Paper,
@@ -28,6 +35,9 @@ export const ChallengeCard: React.FC<ChallengeProps> = ({ challenge, onRefresh }
     const [expandedChallenge, setExpandedChallenge] = useState<number | null>(null);
     const [stravaData, setStravaData] = useState<StravaRunData[]>([]);
     const [selectedStravaRun, setSelectedStravaRun] = useState<StravaRunData | undefined>(undefined);
+    const [stravaDialogOpen, setStravaDialogOpen] = useState<boolean>(false);
+    const [stravaAgreement, setStravaAgreement] = useState<boolean>(false);
+
     const { user } = useAuth();
     useEffect(() => {
         if (expandedChallenge && user?.strava_refresh_token) {
@@ -230,7 +240,7 @@ export const ChallengeCard: React.FC<ChallengeProps> = ({ challenge, onRefresh }
                                         zIndex: 122,
                                         background: 'rgba(255,255,255,0.85)',
                                     }}>
-                                        <button onClick={handleStravaConnection} style={{ background: '#fc4c02', color: '#fff', border: 'none', borderRadius: 4, padding: '16px 32px', cursor: 'pointer', fontSize: '1.2rem', boxShadow: '0 2px 8px rgba(0,0,0,0.15)' }}>
+                                        <button onClick={() => setStravaDialogOpen(true)} style={{ background: '#fc4c02', color: '#fff', border: 'none', borderRadius: 4, padding: '16px 32px', cursor: 'pointer', fontSize: '1.2rem', boxShadow: '0 2px 8px rgba(0,0,0,0.15)' }}>
                                             Strava verbinden
                                         </button>
                                     </Box>
@@ -253,6 +263,22 @@ export const ChallengeCard: React.FC<ChallengeProps> = ({ challenge, onRefresh }
                     </Box>
                 </>)}
             </Box >
+            <Dialog open={stravaDialogOpen} onClose={() => setStravaDialogOpen(false)}>
+                <DialogTitle>Strava Account verbinden</DialogTitle>
+                <DialogContent>
+                    <Typography gutterBottom>
+                        Um deine Strava-Aktivitäten zu synchronisieren, musst du deinen Strava-Account verbinden und der Datenübertragung zustimmen. Dabei sind folgende Daten für die mitgleider deines Battles sichtbar: laufname, Distanz, tempo, Herzfrequenz, ...
+                    </Typography>
+                    <FormControlLabel
+                        control={<Checkbox checked={stravaAgreement} onChange={e => setStravaAgreement(!stravaAgreement)} name="stravaConsent" />}
+                        label="Ich bin damit einverstanden, dass meine Strava-Aktivitäten für diese Challenge verwendet werden und für Battlemitglieder Sichtbar sind."
+                    />
+                </DialogContent>
+                <DialogActions>
+                    <Button onClick={() => setStravaDialogOpen(false)} color="error">Ablehnen</Button>
+                    <Button onClick={handleStravaConnection} color="primary" variant="contained" disabled={!stravaAgreement}>Bestätigen</Button>
+                </DialogActions>
+            </Dialog>
         </>
     )
 
