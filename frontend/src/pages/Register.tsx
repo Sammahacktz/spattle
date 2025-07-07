@@ -37,6 +37,26 @@ const Register: React.FC = () => {
             setError('Passwörter stimmen nicht überein!');
             return;
         }
+        if (formData.password.length < 8) {
+            setError('Das Passwort muss mindestens 8 Zeichen lang sein!');
+            return;
+        }
+        if (!/[A-Z]/.test(formData.password)) {
+            setError('Das Passwort muss mindestens einen Großbuchstaben enthalten!');
+            return;
+        }
+        if (!/[a-z]/.test(formData.password)) {
+            setError('Das Passwort muss mindestens einen Kleinbuchstaben enthalten!');
+            return;
+        }
+        if (!/[0-9]/.test(formData.password)) {
+            setError('Das Passwort muss mindestens eine Zahl enthalten!');
+            return;
+        }
+        if (!/[^A-Za-z0-9]/.test(formData.password)) {
+            setError('Das Passwort muss mindestens ein Sonderzeichen enthalten!');
+            return;
+        }
 
         setIsLoading(true);
 

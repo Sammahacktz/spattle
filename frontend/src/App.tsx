@@ -8,7 +8,11 @@ import Home from './pages/Home';
 import Login from './pages/Login';
 import Party from './pages/Party';
 import Register from './pages/Register';
+import Contact from './pages/Contact';
+import Impressum from './pages/Impressum';
+import DataProtect from './pages/DataProtect';
 import './styles/global.scss';
+import Footer from './components/Footer';
 
 
 
@@ -24,8 +28,12 @@ function App() {
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />
             <Route path="/battle/party/:partycode" element={<Party />} />
+            <Route path="/contact" element={<Contact />} />
+            <Route path="/impressum" element={<Impressum />} />
+            <Route path="/dataprotection" element={<DataProtect />} />
           </Routes>
         </Container>
+        <Footer />
       </Router>
     </AuthProvider>
   );
