@@ -23,7 +23,7 @@ CLIENT_ID = os.environ.get("STRAVA_CLIENT_ID")
 CLIENT_SECRET = os.environ.get("STRAVA_CLIENT_SECRET")
 REDIRECT_URI = os.environ.get("STRAVA_REDIRECT_URI")
 SCOPES = "read,activity:read_all"
-
+APP_URI = os.environ.get("REACT_APP_API_URL")
 
 @router.get("/callback")
 def strava_callback(
@@ -51,7 +51,7 @@ def strava_callback(
         )
     try:
         exchange_code_for_tokens(db, int(user_id), code)
-        return RedirectResponse(url="http://localhost:3000/battles#strava-success")
+        return RedirectResponse(url=f"{APP_URI}/battles#strava-success")
 
     except HTTPException as e:
         raise e

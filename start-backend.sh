@@ -9,4 +9,4 @@ fi
 
 # Start the FastAPI development server
 echo "Starting FastAPI development server..."
-poetry run uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
+poetry run uvicorn app.main:app --uds /tmp/uvicorn.sock --ssl-certfile /etc/ssl/private/fullchain.pem --ssl-keyfile /etc/ssl/private/private.pem 

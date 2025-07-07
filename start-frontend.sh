@@ -9,4 +9,4 @@ fi
 
 # Start the React development server
 echo "Starting React development server..."
-cd frontend && npm start
+cd frontend && npm run build
