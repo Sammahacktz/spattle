@@ -57,7 +57,7 @@ export const ChallengeCard: React.FC<ChallengeProps> = ({ challenge, onRefresh }
         const data = await StravaAPI.getLastRunFromAthlete();
         setStravaData(data)
         setSelectedStravaRun(data.filter((value) => challenge.activity_ids.includes(value.id))[0] ?? undefined)
-        refresh && onRefresh()
+        onRefresh()
     }
 
     return (

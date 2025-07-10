@@ -50,10 +50,11 @@ export const CustomProgressBar: React.FC<CustomProgressBarProps> = ({ value, max
             <Box sx={{ position: 'absolute', left: 0, right: 0, top: 32, height: 8, bgcolor: '#ddd', borderRadius: 4 }}>
                 {activityParts ? (
                     (() => {
-                        const totalPartsKm = activityParts.reduce((sum, p) => (sum + p.distance) / 1000, 0);
+                        const totalPartsKm = activityParts.reduce((sum, p) => (sum + p.distance), 0) / 1000;
                         const diffKm = Math.max(0, value - totalPartsKm);
                         const leftPercent = max > 0 ? (totalPartsKm / max) * 100 : 0;
                         const diffPercent = max > 0 ? (diffKm / max) * 100 : 0;
+
                         return (
                             <>
                                 {activityParts.map((part, i) => (

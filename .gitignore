@@ -219,3 +219,6 @@ vars.sh
 # OS
 .DS_Store
 Thumbs.db
+
+start-backend.sh
+start-frontend.sh
