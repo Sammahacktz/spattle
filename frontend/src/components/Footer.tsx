@@ -1,9 +1,9 @@
 import { Box, Container, Link as MuiLink, Typography } from '@mui/material';
-import React from 'react';
 import { Link } from 'react-router-dom';
 
 const Footer = () => (
-  <Box component="footer" sx={{ bgcolor: 'background.paper', py: 3, mt: 8 }}>
+  <Box component="footer" className='footer'>
+
     <Container maxWidth="md" sx={{ display: 'flex', justifyContent: 'center', gap: 4 }}>
       <MuiLink component={Link} to="/impressum" underline="hover" color="inherit">
         Impressum

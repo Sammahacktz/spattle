@@ -63,6 +63,7 @@ export const ChallengeCard: React.FC<ChallengeProps> = ({ challenge, onRefresh }
     return (
         <>
             <Box
+                className={"challenge"}
                 key={challenge.id}
                 onClick={expandedChallenge !== challenge.id ? () => setExpandedChallenge(challenge.id) : undefined}
                 sx={{

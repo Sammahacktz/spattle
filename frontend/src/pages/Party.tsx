@@ -161,13 +161,8 @@ export const Party: React.FC = () => {
                     flexDirection="column"
                     gap={2}
                     p={2}
-                    sx={{
-                        bgcolor: (theme) => theme.palette.primary.main,
-                        color: '#fff',
-                        borderRadius: 2,
-                        boxShadow: 1,
-                        minWidth: 180
-                    }}
+
+                    className={"party-member"}
                 >
                     <strong>Partymitglieder:</strong>
                     {users.filter(u => u && u.username).map((u) => (

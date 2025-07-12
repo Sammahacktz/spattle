@@ -1,11 +1,31 @@
-@import "_variables";
+$primary-color: #313641;
+$secondary-color: #282c34;
+$font-color: rgb(204, 204, 204);
+
+* {
+    color: $font-color;
+}
 
 body {
     font-family: 'Roboto', sans-serif;
-    background: $secondary-color;
     color: #222;
+    background: #313641;
+    min-height: 100vh;
 }
 
+.footer {
+    background: #282c34;
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    padding-top: 1rem;
+
+    p,
+    span,
+    a {
+        color: #616163;
+    }
+}
 
 
 .App {
@@ -18,7 +38,6 @@ body {
 }
 
 .App-header {
-    background-color: #282c34;
     min-height: 100vh;
     display: flex;
     flex-direction: column;
@@ -77,4 +96,36 @@ body {
     &.rotated {
         transform: rotate(180deg);
     }
+}
+
+.MuiBox-root.MuiBox-root.MuiBox-root.challenge {
+    background-color: $secondary-color;
+    border-color: rgb(88, 88, 88);
+
+}
+
+.party-member {
+    background-color: #1976D2;
+    border-radius: 10px;
+    box-shadow: #222;
+    min-width: 180px;
+
+    .MuiBox-root {
+        background-color: $primary-color;
+        color: $font-color;
+
+        svg {
+            fill: #868a8f;
+        }
+    }
+}
+
+.challenge-meter-track {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 32%;
+    height: 8%;
+    border-radius: 50px;
+    background-color: #535353;
 }

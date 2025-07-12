@@ -1,18 +1,18 @@
 import { Container } from '@mui/material';
 import 'leaflet/dist/leaflet.css';
 import { Route, BrowserRouter as Router, Routes } from 'react-router-dom';
+import Footer from './components/Footer';
 import Navbar from './components/Navbar';
 import { AuthProvider } from './contexts/AuthContext';
 import Battles from './pages/Battles';
+import Contact from './pages/Contact';
+import DataProtect from './pages/DataProtect';
 import Home from './pages/Home';
+import Impressum from './pages/Impressum';
 import Login from './pages/Login';
 import Party from './pages/Party';
 import Register from './pages/Register';
-import Contact from './pages/Contact';
-import Impressum from './pages/Impressum';
-import DataProtect from './pages/DataProtect';
 import './styles/global.scss';
-import Footer from './components/Footer';
 
 
 
