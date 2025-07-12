@@ -21,7 +21,7 @@ interface CustomProgressBarProps {
 
 // Fixed color palette for activity segments
 const colorPalette = [
-    '#3cb44b', '#ffe119', '#4363d8', '#f58231', '#911eb4', '#46f0f0', '#f032e6', '#bcf60c', '#fabebe',
+    '#3cb44b', '#ffe119', '#f58231', '#911eb4', '#46f0f0', '#f032e6', '#bcf60c', '#fabebe',
     '#008080', '#e6beff', '#9a6324', '#fffac8', '#800000', '#aaffc3', '#808000', '#ffd8b1', '#000075', '#808080'
 ];
 const getColorForActivity = (activity: StravaRunData, idx: number) => {
@@ -47,7 +47,7 @@ export const CustomProgressBar: React.FC<CustomProgressBarProps> = ({ value, max
     return (
         <Box sx={{ position: 'relative', width: '100%', height: 80, px: 2 }}>
 
-            <Box sx={{ position: 'absolute', left: 0, right: 0, top: 32, height: 8, bgcolor: '#ddd', borderRadius: 4 }}>
+            <Box className="challenge-meter-track" >
                 {activityParts ? (
                     (() => {
                         const totalPartsKm = activityParts.reduce((sum, p) => (sum + p.distance), 0) / 1000;
@@ -125,6 +125,47 @@ export const CustomProgressBar: React.FC<CustomProgressBarProps> = ({ value, max
                                         }} />
                                     </Tooltip>
                                 )}
+                                {[...activityParts].reverse().map((part, i) => (
+                                    <Tooltip
+                                        key={i}
+                                        title={
+                                            <>
+                                                <Typography variant="subtitle2">{part.name || `Aktivität ${i + 1}`}</Typography>
+                                                <Typography variant="caption">
+                                                    Distanz: {(part.distance / 1000).toLocaleString('de-DE', { maximumFractionDigits: 2 })} km<br />
+                                                    Zeit: {part.elapsed_time ? `${Math.round(part.elapsed_time / 60)} min` : '-'}<br />
+                                                    Datum: {part.start_date ? new Date(part.start_date).toLocaleDateString('de-DE') : '-'}
+                                                </Typography>
+                                                <br></br>
+                                                <Typography variant="caption">
+                                                    klick für mehr information
+                                                </Typography>
+                                            </>
+                                        }
+                                        arrow
+                                    >
+                                        <Box
+                                            sx={{
+                                                position: 'absolute',
+                                                left: `${max > 0 ? ([...activityParts].reverse().slice(0, i).reduce((sum, p) => sum + p.distance / 1000, 0) / max) * 100 : 0}%`,
+                                                width: `${max > 0 ? ((part.distance / 1000) / max) * 100 : 0}%`,
+                                                top: selectedRun === part.id ? -1 : 0,
+                                                height: selectedRun === part.id ? 10 : 8,
+                                                bgcolor: getColorForActivity(part, i),
+                                                borderRadius: 4,
+                                                transition: 'width 2s',
+                                                borderLeft: "1px solid white",
+                                                borderRight: "1px solid white",
+                                                '&:hover': {
+                                                    top: -2,
+                                                    height: 12,
+                                                    opacity: 0.8,
+                                                }
+                                            }}
+                                            onClick={() => { onSelect(part); setSelectedRun(part.id) }}
+                                        />
+                                    </Tooltip>
+                                ))}
                             </>
                         );
                     })()
