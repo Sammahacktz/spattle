@@ -57,7 +57,7 @@ export const CustomProgressBar: React.FC<CustomProgressBarProps> = ({ value, max
 
                         return (
                             <>
-                                {activityParts.map((part, i) => (
+                                {[...activityParts].reverse().map((part, i) => (
                                     <Tooltip
                                         key={i}
                                         title={
@@ -78,7 +78,7 @@ export const CustomProgressBar: React.FC<CustomProgressBarProps> = ({ value, max
                                         <Box
                                             sx={{
                                                 position: 'absolute',
-                                                left: `${max > 0 ? (activityParts.slice(0, i).reduce((sum, p) => sum + p.distance / 1000, 0) / max) * 100 : 0}%`,
+                                                left: `${max > 0 ? ([...activityParts].reverse().slice(0, i).reduce((sum, p) => sum + p.distance / 1000, 0) / max) * 100 : 0}%`,
                                                 width: `${max > 0 ? ((part.distance / 1000) / max) * 100 : 0}%`,
                                                 top: selectedRun === part.id ? -1 : 0,
                                                 height: selectedRun === part.id ? 10 : 8,
