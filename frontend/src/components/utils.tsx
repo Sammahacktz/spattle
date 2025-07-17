@@ -44,3 +44,4 @@ export const getRandomHighContrastColor = (prevColor?: string): string => {
 
     return `hsl(${newHue}, ${saturation}%, ${lightness}%)`;
 }
+

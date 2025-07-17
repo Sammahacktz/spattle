@@ -9,12 +9,35 @@ import {
     Typography,
 } from '@mui/material';
 import React from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
+import logo1 from '../logo1.png';
 
 const Navbar: React.FC = () => {
     const { user, isLoading, logout, isAuthenticated } = useAuth();
     const navigate = useNavigate();
+    const location = useLocation();
+
+    if (location.pathname === "/") {
+        return <Box className={"home-action-box"}>
+            <Box sx={{ display: 'flex' }}>
+                <Button color="inherit" className='home-action-button p-2' component={Link} to="/login" onMouseMove={e => {
+                    const rect = e.currentTarget.getBoundingClientRect();
+                    e.currentTarget.style.setProperty('--mouse-x', `${e.clientX - rect.left}px`);
+                    e.currentTarget.style.setProperty('--mouse-y', `${e.clientY - rect.top}px`);
+                }}>
+                    Anmelden
+                </Button>
+                <Button color="inherit" className='home-action-button register p-2' component={Link} to="/register" onMouseMove={e => {
+                    const rect = e.currentTarget.getBoundingClientRect();
+                    e.currentTarget.style.setProperty('--mouse-x', `${e.clientX - rect.left}px`);
+                    e.currentTarget.style.setProperty('--mouse-y', `${e.clientY - rect.top}px`);
+                }}>
+                    Registrieren
+                </Button>
+            </Box>
+        </Box>;
+    }
 
     const handleLogout = () => {
         logout();
@@ -23,7 +46,7 @@ const Navbar: React.FC = () => {
 
     if (isLoading) {
         return (
-            <AppBar position="static">
+            <AppBar position="static" className={"spattle-navbar"}>
                 <Toolbar>
                     <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
                         Spattle
@@ -35,11 +58,11 @@ const Navbar: React.FC = () => {
     }
 
     return (
-        <AppBar position="static" className='spattle-navbar'>
+        <AppBar position="static" className={"spattle-navbar"}>
             <Toolbar>
                 <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
                     <Link to="/" style={{ color: 'inherit', textDecoration: 'none' }}>
-                        Spattle
+                        <img className="pt-2" src={logo1} alt="Spattle Logo" style={{ maxWidth: '150px', width: '100%' }} />
                     </Link>
                 </Typography>
                 <IconButton
@@ -51,11 +74,11 @@ const Navbar: React.FC = () => {
                     <HelpOutlineIcon />
                 </IconButton>
                 <Box sx={{ display: 'flex', gap: 2 }}>
-                    <Button color="inherit" component={Link} to="/battles">
-                        Battles
-                    </Button>
                     {isAuthenticated ? (
                         <>
+                            <Button color="inherit" component={Link} to="/battles">
+                                Battles
+                            </Button>
                             <Typography
                                 variant="body1"
                                 sx={{ alignSelf: 'center', mr: 2 }}

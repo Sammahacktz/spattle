@@ -7,6 +7,7 @@ import {
 } from '@mui/material';
 import Tooltip from '@mui/material/Tooltip';
 import React from 'react';
+import runner from "../runner.png";
 import { StravaRunData } from '../types';
 
 type RewardMark = { title: string; target?: number, description?: string | undefined };
@@ -190,7 +191,7 @@ export const CustomProgressBar: React.FC<CustomProgressBarProps> = ({ value, max
                     pointerEvents: 'none',
                     transition: 'left 2s',
                 }}>
-                    🏃‍➡️
+                    <img src={runner} alt="runner icon" style={{ maxWidth: '50px', width: '100%' }} />
                 </Box>
                 {marks.map((mark, i) => (
                     (detailed ? (

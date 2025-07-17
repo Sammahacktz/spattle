@@ -1,6 +1,6 @@
 $primary-color: #313641;
 $secondary-color: #282c34;
-$font-color: rgb(204, 204, 204);
+$font-color: #BCC8C4;
 
 * {
     color: $font-color;
@@ -13,10 +13,11 @@ body {
     min-height: 100vh;
 }
 
+/* Place this code completely at the end of the file, after all other styles */
+
 .footer {
     background: #282c34;
-    position: absolute;
-    bottom: 0;
+    position: relative;
     width: 100%;
     padding-top: 1rem;
 
@@ -98,10 +99,29 @@ body {
     }
 }
 
-.MuiBox-root.MuiBox-root.MuiBox-root.challenge {
-    background-color: $secondary-color;
-    border-color: rgb(88, 88, 88);
+.MuiBox-root.MuiBox-root.MuiBox-root {
+    &.home-action-box {
+        position: absolute;
+        top: 57%;
+        left: 33%;
+        width: 35rem;
+        border: 1px solid #BCC8C4;
+        border-top: unset;
+        padding-top: 11px;
+        border-bottom-left-radius: 10px;
+        border-bottom-right-radius: 10px;
+        display: flex;
+        justify-content: flex-end;
+        animation: apear-from-top 1s forwards 1s;
+        opacity: 0;
 
+    }
+
+    &.challenge {
+        background-color: $secondary-color;
+        border-color: rgb(88, 88, 88);
+
+    }
 }
 
 .party-member {
@@ -128,4 +148,123 @@ body {
     height: 8%;
     border-radius: 50px;
     background-color: #535353;
+}
+
+#terminal {
+    position: absolute;
+    top: 30%;
+    left: 33%;
+    z-index: 10;
+    padding: 5px 5px 5px 5px;
+    background-color: transparent;
+    width: 35rem;
+    font-family: 'Fira Mono', 'Consolas', 'Courier New', monospace;
+    color: white;
+    font-size: medium;
+    height: 15rem;
+    border: 1px solid #BCC8C4;
+    border-radius: 10px;
+    overflow-y: hidden;
+    border-bottom-left-radius: 0px;
+    border-bottom-right-radius: 0px;
+
+
+    p {
+        min-width: 30rem;
+        overflow: hidden;
+        padding: 0;
+        margin: 0;
+    }
+}
+
+.MuiPaper-root.MuiPaper-root {
+    &.spattle-navbar {
+        background-color: transparent;
+        box-shadow: none;
+        //border-bottom: 1px solid #BCC8C4;
+        color: #BCC8C4;
+    }
+}
+
+.MuiButtonBase-root.MuiButtonBase-root.MuiButtonBase-root {
+    &.home-action-button {
+        position: relative;
+        overflow: hidden;
+        border-radius: unset;
+
+
+        &::before {
+            content: '';
+            position: absolute;
+            left: var(--mouse-x, 50%);
+            top: var(--mouse-y, 50%);
+            transform: translate(-50%, -50%) scale(0);
+            width: 200%;
+            height: 200%;
+            background: #BCC8C4;
+            border-radius: 40%;
+            transition: transform 0.5s;
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        &:hover {
+            color: black;
+
+            &::before {
+                transform: translate(-50%, -50%) scale(1);
+            }
+        }
+
+        &.register {
+            border-bottom-right-radius: 10px;
+        }
+    }
+
+    .MuiButton-label {
+        color: black;
+    }
+}
+
+.open-terminal {
+    animation: terminal-slide 1s forwards;
+}
+
+.close-terminal {
+    animation: terminal-slide 1s reverse forwards;
+}
+
+@keyframes terminal-slide {
+    0% {
+        width: 2rem;
+        height: 2rem;
+        overflow: hidden;
+    }
+
+    50% {
+        width: 2rem;
+        height: 15rem;
+        overflow: hidden;
+    }
+
+    99% {
+        width: 35rem;
+        height: 15rem;
+        overflow: hidden;
+    }
+}
+
+
+@keyframes apear-from-top {
+    0% {
+        opacity: 0;
+        overflow: hidden;
+        top: 55%;
+    }
+
+    100% {
+        opacity: 1;
+        overflow: hidden;
+        top: 57%;
+    }
 }
