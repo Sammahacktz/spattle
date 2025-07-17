@@ -1,6 +1,6 @@
 from fastapi import HTTPException
 from sqlalchemy.orm import Session
-from app.models.models import Challenge
+from app.models.models import Challenge, User, BattleParty
 from app.schemas.validators import parse_comma_string
 from app.services.user_service import get_user
 from app.services.crypto_service import encrypt_token, decrypt_token
@@ -14,6 +14,18 @@ CLIENT_ID = os.environ.get("STRAVA_CLIENT_ID")
 CLIENT_SECRET = os.environ.get("STRAVA_CLIENT_SECRET")
 REDIRECT_URI = os.environ.get("STRAVA_REDIRECT_URI")
 SCOPES = "read,activity:read_all"
+
+
+def get_challenge_assigne(
+    db: Session, assigne_username: str, logged_in_user: User
+) -> int | None:
+    assigned_user = db.query(User).filter(User.username == assigne_username).first()
+    if not assigned_user:
+        return None
+
+    # TODO: check explicit for challenge
+    # Check for intersection
+    return assigned_user
 
 
 def sync_activities(db: Session, user_id: int, strava_models: list[StravaModel]):

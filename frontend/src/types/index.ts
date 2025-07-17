@@ -68,7 +68,7 @@ export interface Challenge {
     end_datetime?: string;
     battle?: Battle;
     creator?: User;
-    assigned_user?: User;
+    assigned_user: User;
     rewards: Reward[];
     activity_ids: number[]
 }

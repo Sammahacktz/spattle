@@ -10,6 +10,7 @@ from app.schemas.schemas import StravaModel
 from app.services.crypto_service import decrypt_token, encrypt_token
 from app.services.strava_service import (
     exchange_code_for_tokens,
+    get_challenge_assigne,
     refresh_access_token,
     sync_activities,
 )
@@ -24,6 +25,7 @@ CLIENT_SECRET = os.environ.get("STRAVA_CLIENT_SECRET")
 REDIRECT_URI = os.environ.get("STRAVA_REDIRECT_URI")
 SCOPES = "read,activity:read_all"
 APP_URI = os.environ.get("REACT_APP_API_URL")
+
 
 @router.get("/callback")
 def strava_callback(
@@ -79,27 +81,35 @@ def build_auth_url(request: Request, user: User = Depends(get_current_user)):
     }
 
 
-@router.get("/run/last/", response_model=list[StravaModel])
+@router.get("/run/last/{username}", response_model=list[StravaModel])
 def get_last_strava_run(
-    request: Request,
+    username: str,
     user: User = Depends(get_current_user),
     db: Session = Depends(get_db),
 ):
     if not user:
         raise HTTPException(status_code=400, detail="User ID required")
-    access_token = decrypt_token(user.strava_access_token)
+
+    challenge_assignee = get_challenge_assigne(db, username, user)
+
+    if not challenge_assignee:
+        raise HTTPException(status_code=403, detail="Invalid Request")
+
+    access_token = decrypt_token(challenge_assignee.strava_access_token)
     url = "https://www.strava.com/api/v3/athlete/activities"
     headers = {"Authorization": f"Bearer {access_token}"}
     response = httpx.get(url, headers=headers)
     if response.status_code == 401:
         # Token expired, refresh and retry
-        access_token = refresh_access_token(db, user.id)
+        access_token = refresh_access_token(db, challenge_assignee.id)
         headers = {"Authorization": f"Bearer {access_token}"}
         response = httpx.get(url, headers=headers)
     if response.status_code == 200:
         test = response.json()
         if test:
-            sync_activities(db, user.id, [StravaModel.model_validate(a) for a in test])
+            sync_activities(
+                db, challenge_assignee.id, [StravaModel.model_validate(a) for a in test]
+            )
         return test
     else:
         raise HTTPException(

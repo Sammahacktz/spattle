@@ -40,7 +40,7 @@ export const ChallengeCard: React.FC<ChallengeProps> = ({ challenge, onRefresh }
 
     const { user } = useAuth();
     useEffect(() => {
-        if (expandedChallenge && user?.strava_refresh_token) {
+        if (expandedChallenge && challenge.assigned_user.strava_refresh_token) {
             handleStravaSync(false)
         }
     }, [expandedChallenge]);
@@ -54,7 +54,7 @@ export const ChallengeCard: React.FC<ChallengeProps> = ({ challenge, onRefresh }
     }
 
     const handleStravaSync = async (refresh: boolean = true) => {
-        const data = await StravaAPI.getLastRunFromAthlete();
+        const data = await StravaAPI.getLastRunFromAthlete(challenge.assigned_user.username);
         setStravaData(data)
         setSelectedStravaRun(data.filter((value) => challenge.activity_ids.includes(value.id))[0] ?? undefined)
         onRefresh()
@@ -227,7 +227,7 @@ export const ChallengeCard: React.FC<ChallengeProps> = ({ challenge, onRefresh }
                                 </Grid>
                             </Card>
                             <Box sx={{ width: "100%", minHeight: '350px', position: 'relative' }}>
-                                {!user?.strava_refresh_token ? (
+                                {!user?.strava_refresh_token && challenge.assigned_user.id === user?.id ? (
                                     <Box sx={{
                                         position: 'absolute',
                                         top: 0,

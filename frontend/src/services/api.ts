@@ -80,9 +80,9 @@ export const StravaAPI = {
             throw error;
         }
     },
-    getLastRunFromAthlete: async (): Promise<StravaRunData[]> => {
+    getLastRunFromAthlete: async (username: string): Promise<StravaRunData[]> => {
         try {
-            const response = await api.get('/strava/run/last/');
+            const response = await api.get(`/strava/run/last/${username}/`);
             return response.data;
         } catch (error: any) {
             redirectOn401Or403(error);
