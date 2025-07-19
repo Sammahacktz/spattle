@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Glossy Glass Lens</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        html,
+        body {
+            height: 100%;
+            font-family: sans-serif;
+            overflow: hidden;
+        }
+
+        body {
+            background: linear-gradient(135deg, #02313d 0%, #500c91 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            perspective: 1000px;
+            /* Enables 3D transforms */
+        }
+
+        .glass-lens {
+            position: relative;
+            width: 300px;
+            height: 300px;
+            border-radius: 50%;
+            overflow: hidden;
+            border: 2px solid rgba(255, 255, 255, 0.5);
+            box-shadow: 0 0 50px rgba(0, 0, 0, 0.3);
+            background: rgba(255, 255, 255, 0.1);
+            /* Slightly more visible */
+            backdrop-filter: blur(15px) brightness(1.1);
+            -webkit-backdrop-filter: blur(15px) brightness(1.1);
+            transition: transform 0.3s ease, backdrop-filter 0.3s ease;
+            cursor: zoom-in;
+        }
+
+        /* Glare in upper-right */
+        .glare {
+            position: absolute;
+            top: 25%;
+            right: 25%;
+            width: 10%;
+            height: 10%;
+            background: radial-gradient(circle at top right, rgba(255, 255, 255, 0.7), transparent 70%);
+            pointer-events: none;
+            mix-blend-mode: screen;
+            z-index: 2;
+        }
+
+        /* Inner content (optional text) */
+        .content {
+            position: relative;
+            z-index: 1;
+            color: white;
+            text-align: center;
+            font-weight: bold;
+            font-size: 1.2rem;
+            transform: translateZ(20px);
+            /* Slight 3D lift */
+        }
+    </style>
+</head>
+
+<body>
+    <div class="glass-lens" id="lens">
+        <div class="glare"></div>
+        <div class="content">
+            Glass Lens
+        </div>
+    </div>
+
+    <script>
+        const lens = document.getElementById("lens");
+
+        document.addEventListener("mousemove", (e) => {
+            const { innerWidth, innerHeight } = window;
+            const x = e.clientX / innerWidth - 0.5;
+            const y = e.clientY / innerHeight - 0.5;
+
+            // Rotate the lens like a 3D object
+            const rotateX = y * 40; // Tilt vertically
+            const rotateY = -x * 40; // Tilt horizontally
+
+            lens.style.transform = `
+        rotateX(${rotateX}deg)
+        rotateY(${rotateY}deg)
+        scale(1.2)
+      `;
+
+            // Add stronger blur on hover
+            lens.style.backdropFilter = "blur(25px) brightness(1.3)";
+        });
+
+        document.addEventListener("mouseleave", () => {
+            lens.style.transform = "rotateX(0deg) rotateY(0deg) scale(1)";
+            lens.style.backdropFilter = "blur(15px) brightness(1.1)";
+        });
+    </script>
+</body>
+
+</html>

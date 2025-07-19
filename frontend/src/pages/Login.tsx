@@ -44,9 +44,10 @@ const Login: React.FC = () => {
                     alignItems: 'center',
                 }}
             >
-                <Paper elevation={3} sx={{ padding: 4, width: '100%' }}>
+                <Paper elevation={3} sx={{ padding: 4, width: '100%' }} className='spattle-card'>
+
                     <Typography component="h1" variant="h4" align="center" gutterBottom>
-                        Sign In
+                        Anmelden
                     </Typography>
 
                     {error && (
@@ -73,7 +74,7 @@ const Login: React.FC = () => {
                             required
                             fullWidth
                             name="password"
-                            label="Password"
+                            label="Passwort"
                             type="password"
                             id="password"
                             autoComplete="current-password"
@@ -83,15 +84,20 @@ const Login: React.FC = () => {
                         <Button
                             type="submit"
                             fullWidth
-                            variant="contained"
                             sx={{ mt: 3, mb: 2 }}
                             disabled={isLoading}
+                            className='animated-button home-action-button'
+                            onMouseMove={e => {
+                                const rect = e.currentTarget.getBoundingClientRect();
+                                e.currentTarget.style.setProperty('--mouse-x', `${e.clientX - rect.left}px`);
+                                e.currentTarget.style.setProperty('--mouse-y', `${e.clientY - rect.top}px`);
+                            }}
                         >
-                            {isLoading ? 'Signing In...' : 'Sign In'}
+                            {isLoading ? 'Du wirst angemeldet...' : 'Anmelden'}
                         </Button>
                         <Box textAlign="center">
                             <Link to="/register">
-                                Don't have an account? Sign Up
+                                Du hast noch keinen Account? Jetzt Registrieren!
                             </Link>
                         </Box>
                     </Box>

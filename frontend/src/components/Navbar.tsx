@@ -21,14 +21,14 @@ const Navbar: React.FC = () => {
     if (location.pathname === "/") {
         return <Box className={"home-action-box"}>
             <Box sx={{ display: 'flex' }}>
-                <Button color="inherit" className='home-action-button p-2' component={Link} to="/login" onMouseMove={e => {
+                <Button color="inherit" className='home-action-button animated-button p-2' component={Link} to="/login" onMouseMove={e => {
                     const rect = e.currentTarget.getBoundingClientRect();
                     e.currentTarget.style.setProperty('--mouse-x', `${e.clientX - rect.left}px`);
                     e.currentTarget.style.setProperty('--mouse-y', `${e.clientY - rect.top}px`);
                 }}>
                     Anmelden
                 </Button>
-                <Button color="inherit" className='home-action-button register p-2' component={Link} to="/register" onMouseMove={e => {
+                <Button color="inherit" className='home-action-button animated-button register p-2' component={Link} to="/register" onMouseMove={e => {
                     const rect = e.currentTarget.getBoundingClientRect();
                     e.currentTarget.style.setProperty('--mouse-x', `${e.clientX - rect.left}px`);
                     e.currentTarget.style.setProperty('--mouse-y', `${e.clientY - rect.top}px`);
