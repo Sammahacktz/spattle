@@ -9,11 +9,10 @@ import {
     DialogActions,
     DialogContent,
     DialogTitle,
-    TextField,
-    Typography
+    TextField
 } from '@mui/material';
 import React, { useEffect, useState } from 'react';
-import { useLocation } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { BattleGrid } from '../components/BattleGrid';
 import { useAuth } from '../contexts/AuthContext';
 import { battlesAPI } from '../services/api';
@@ -32,8 +31,9 @@ const Battles: React.FC = () => {
     });
     const [openJoin, setOpenJoin] = useState(false);
     const [inviteCode, setInviteCode] = useState('');
-    const location = useLocation();
     const [stravaSuccess, setStravaSuccess] = useState(false);
+    const navigate = useNavigate();
+
 
     useEffect(() => {
         if (user) {
@@ -45,6 +45,10 @@ const Battles: React.FC = () => {
             window.history.replaceState(null, '', window.location.pathname + window.location.search);
         }
     }, [user]);
+
+    if (!isAuthenticated) {
+        navigate("/login")
+    }
 
     const loadUserBattles = async (userId: number) => {
         setIsLoading(true);
@@ -109,11 +113,6 @@ const Battles: React.FC = () => {
                     Strava wurde erfolgreich verbunden!
                 </Alert>
             )}
-            <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'end', mb: 4 }}>
-                <Typography variant="h4" component="h1">
-                    Deine Battles
-                </Typography>
-            </Box>
 
             {error && (
                 <Alert severity="error" sx={{ mb: 2 }}>
@@ -123,51 +122,46 @@ const Battles: React.FC = () => {
 
             <div>
                 <div>
-                    <h2>Deine Battles:</h2>
-                    {isAuthenticated && (
-                        <>
-                            <Button
-                                variant="contained"
-                                startIcon={<AddIcon />}
-                                onClick={() => setOpenCreate(true)}
-                            >
-                                Battle erstellen
-                            </Button>
-                        </>
-                    )}
+                    <h1>Deine Battles:</h1>
+                    <Box display="flex" gap={2} mt={4} mb={5}>
+                        <Button
+                            variant="contained"
+                            startIcon={<AddIcon />}
+                            onClick={() => setOpenCreate(true)}
+                            className='animated-button'
+                            onMouseMove={e => {
+                                const rect = e.currentTarget.getBoundingClientRect();
+                                e.currentTarget.style.setProperty('--mouse-x', `${e.clientX - rect.left}px`);
+                                e.currentTarget.style.setProperty('--mouse-y', `${e.clientY - rect.top}px`);
+                            }}
+                        >
+                            Battle erstellen
+                        </Button>
+                        <Button
+                            variant="contained"
+                            startIcon={<AddIcon />}
+                            onClick={() => setOpenJoin(true)}
+                            className='animated-button'
+                            onMouseMove={e => {
+                                const rect = e.currentTarget.getBoundingClientRect();
+                                e.currentTarget.style.setProperty('--mouse-x', `${e.clientX - rect.left}px`);
+                                e.currentTarget.style.setProperty('--mouse-y', `${e.clientY - rect.top}px`);
+                            }}
+                        >
+                            Battle beitreten
+                        </Button>
+                    </Box>
+
                     <BattleGrid
-                        battles={battles.filter(
-                            (battle) => battle && battle.creator_id === user?.id && battle.title && battle.partycode
-                        )}
-                        isAuthenticated={isAuthenticated}
-                        error={error}
-                    />
-                </div>
-                <div>
-                    <h2>Battles an denen du teilnimmst:</h2>
-                    {isAuthenticated && (
-                        <>
-                            <Button
-                                variant="contained"
-                                startIcon={<AddIcon />}
-                                onClick={() => setOpenJoin(true)}
-                            >
-                                Battle beitreten
-                            </Button>
-                        </>
-                    )}
-                    <BattleGrid
-                        battles={battles.filter(
-                            (battle) => battle && battle.creator_id !== user?.id && battle.title && battle.partycode
-                        )}
-                        isAuthenticated={isAuthenticated}
+                        battles={battles}
                         error={error}
                     />
                 </div>
             </div>
 
             {/* Join Battle Dialog */}
-            <Dialog open={openJoin} onClose={() => setOpenJoin(false)} maxWidth="sm" fullWidth>
+            <Dialog open={openJoin} onClose={() => setOpenJoin(false)} maxWidth="sm" fullWidth slotProps={{ paper: { className: "spattle-card spattle-modal p-2" } }}
+            >
                 <DialogTitle>Battle beitreten</DialogTitle>
                 <DialogContent>
                     <TextField
@@ -183,22 +177,36 @@ const Battles: React.FC = () => {
                     />
                 </DialogContent>
                 <DialogActions>
-                    <Button onClick={() => setOpenJoin(false)}>Abbrechen</Button>
-                    <Button onClick={handleSubmitJoin} variant="contained">
+                    <Button className='animated-button' onClick={() => setOpenJoin(false)} onMouseMove={e => {
+                        const rect = e.currentTarget.getBoundingClientRect();
+                        e.currentTarget.style.setProperty('--mouse-x', `${e.clientX - rect.left}px`);
+                        e.currentTarget.style.setProperty('--mouse-y', `${e.clientY - rect.top}px`);
+                    }}>Abbrechen</Button>
+                    <Button className='animated-button' onClick={handleSubmitJoin} variant="contained" onMouseMove={e => {
+                        const rect = e.currentTarget.getBoundingClientRect();
+                        e.currentTarget.style.setProperty('--mouse-x', `${e.clientX - rect.left}px`);
+                        e.currentTarget.style.setProperty('--mouse-y', `${e.clientY - rect.top}px`);
+                    }}>
                         Battle beitreten!
                     </Button>
                 </DialogActions>
             </Dialog>
 
             {/* Create Battle Dialog */}
-            <Dialog open={openCreate} onClose={() => setOpenCreate(false)} maxWidth="sm" fullWidth>
-                <DialogTitle>Create New Battle</DialogTitle>
+            <Dialog
+                open={openCreate}
+                onClose={() => setOpenCreate(false)}
+                maxWidth="sm"
+                fullWidth
+                slotProps={{ paper: { className: "spattle-card spattle-modal p-2" } }}
+            >
+                <DialogTitle>Neues Battle erstellen</DialogTitle>
                 <DialogContent>
                     <TextField
                         autoFocus
                         margin="dense"
                         name="title"
-                        label="Battle Title"
+                        label="Battle Name"
                         fullWidth
                         variant="outlined"
                         value={formData.title}
@@ -208,7 +216,7 @@ const Battles: React.FC = () => {
                     <TextField
                         margin="dense"
                         name="description"
-                        label="Description"
+                        label="Beschreibung"
                         fullWidth
                         multiline
                         rows={4}
@@ -218,13 +226,21 @@ const Battles: React.FC = () => {
                     />
                 </DialogContent>
                 <DialogActions>
-                    <Button onClick={() => setOpenCreate(false)}>Cancel</Button>
-                    <Button onClick={handleSubmitCreate} variant="contained">
-                        Create Battle
+                    <Button className='animated-button' onClick={() => setOpenCreate(false)} onMouseMove={e => {
+                        const rect = e.currentTarget.getBoundingClientRect();
+                        e.currentTarget.style.setProperty('--mouse-x', `${e.clientX - rect.left}px`);
+                        e.currentTarget.style.setProperty('--mouse-y', `${e.clientY - rect.top}px`);
+                    }}>Abbrechen</Button>
+                    <Button className='animated-button' onClick={handleSubmitCreate} variant="contained" onMouseMove={e => {
+                        const rect = e.currentTarget.getBoundingClientRect();
+                        e.currentTarget.style.setProperty('--mouse-x', `${e.clientX - rect.left}px`);
+                        e.currentTarget.style.setProperty('--mouse-y', `${e.clientY - rect.top}px`);
+                    }}>
+                        Battle erstellen!
                     </Button>
                 </DialogActions>
             </Dialog>
-        </Container>
+        </Container >
     );
 };
 

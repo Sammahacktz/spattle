@@ -124,8 +124,6 @@ const COLOR_POPUP_CONNECTOR = '#BCC8C4';
 const TERMINAL_PATHS = ["/"]
 
 
-const COLOR_BG_GRADIENT = 'linear-gradient(130deg, rgb(0 0 0) 0%, #4B56CD 100%)';
-
 const HELIX_COLOR = '#BCC8C4';
 const PULSE_COLOR = '#BCC8C4';
 const PULSE_LINE_COLOR = '#BCC8C4';
@@ -210,8 +208,8 @@ const typeTerminalContentSync = (element, html, speed = TYPING_SPEED) => new Pro
             height: '100vh',
             zIndex: -1,
             pointerEvents: 'none',
-            background: COLOR_BG_GRADIENT,
-            transition: 'filter 0.5s',
+            background: 'url("/bg.png") center center / cover no-repeat',
+            transition: 'filter 0.5s'
         });
         document.body.appendChild(canvas);
     }

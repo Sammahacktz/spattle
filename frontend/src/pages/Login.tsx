@@ -26,7 +26,7 @@ const Login: React.FC = () => {
 
         try {
             await login({ username, password });
-            navigate('/');
+            navigate('/battles');
         } catch (err: any) {
             setError(err.response?.data?.detail || 'Login failed');
         } finally {
@@ -86,7 +86,7 @@ const Login: React.FC = () => {
                             fullWidth
                             sx={{ mt: 3, mb: 2 }}
                             disabled={isLoading}
-                            className='animated-button home-action-button'
+                            className='animated-button'
                             onMouseMove={e => {
                                 const rect = e.currentTarget.getBoundingClientRect();
                                 e.currentTarget.style.setProperty('--mouse-x', `${e.clientX - rect.left}px`);

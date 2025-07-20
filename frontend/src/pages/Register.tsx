@@ -84,7 +84,7 @@ const Register: React.FC = () => {
                     alignItems: 'center',
                 }}
             >
-                <Paper elevation={3} sx={{ padding: 4, width: '100%' }}>
+                <Paper elevation={3} sx={{ padding: 4, width: '100%' }} className='spattle-card'>
                     <Typography component="h1" variant="h4" align="center" gutterBottom>
                         Regestrieren
                     </Typography>
@@ -147,7 +147,13 @@ const Register: React.FC = () => {
                             fullWidth
                             variant="contained"
                             sx={{ mt: 3, mb: 2 }}
+                            className='animated-button'
                             disabled={isLoading}
+                            onMouseMove={e => {
+                                const rect = e.currentTarget.getBoundingClientRect();
+                                e.currentTarget.style.setProperty('--mouse-x', `${e.clientX - rect.left}px`);
+                                e.currentTarget.style.setProperty('--mouse-y', `${e.clientY - rect.top}px`);
+                            }}
                         >
                             {isLoading ? 'Account wird erstellt ...' : 'Regestrieren'}
                         </Button>
